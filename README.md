@@ -21,15 +21,17 @@
 
 | Module | Description |
 |---|---|
-| 🌱 **3D Landing Page** | Apple-quality UI with React Three Fiber farmland, AI drone, bloom effects, glassmorphism |
-| 🔐 **Authentication** | JWT Register/Login/Forgot Password, role-based access (Farmer / Admin) |
-| 🧪 **AI Soil Analysis** | Enter NPK + pH + moisture → get Health Score, crop recommendations, fertilizer dosage |
-| 🏛️ **Government Scheme Finder** | Multilingual filter (EN/HI/MR) for PM-KISAN, PMFBY, PMKSY, PM-KUSUM + bookmarks |
-| 📊 **Smart Dashboard** | Weather, crop health, NPK trends, yield analysis, reminders, recent soil logs |
-| 🤖 **AI ChatBot** | Voice input/output, image diagnosis, multilingual, Gemini Flash powered |
-| 🔔 **Notifications** | Real-time per-user notifications with auto-TTL |
-| 💬 **Feedback System** | Star rating, category, admin response workflow |
-| 👑 **Admin Dashboard** | Analytics, user management, broadcast notifications, scheme CRUD |
+| 🌱 **3D Landing Page** | Apple-quality UI with React Three Fiber farmland, AI drone, particle stars, glassmorphism, and custom magnetic cursor |
+| 🌐 **100% Multilingual System** | Instant language switcher for **English**, **Hindi (हिंदी)**, and **Marathi (मराठी)** covering all pages, forms, badges, dropdowns, and reminders |
+| 📷 **Live Camera Diagnosis** | Built-in device camera stream integration for instant soil & crop photo uploads in Soil Analysis & AI ChatBot |
+| 🧪 **AI Soil Analysis** | Enter NPK + pH + Moisture or pair portable Bluetooth NPK sensors → get AI Health Score, crop recommendations, and custom fertilizer dosage |
+| 🏛️ **21 Government Schemes** | Comprehensive catalog (PM-KISAN, PMFBY, PMKSY, PM-KUSUM, Soil Health Card, SMAM, PMMSY, RKVY, KCC, etc.) with 6-parameter smart filters & bookmarks |
+| 🌦️ **3-Day Weather Telemetry** | Interactive single-banner today's weather with modal popup for 3-day forecast, humidity, wind, and solar radiance metrics |
+| 📊 **Smart Dashboard** | Live crop health monitoring, NPK trend charts, yield gain analysis, localized farming reminders, and recent soil diagnostic logs |
+| 🤖 **AI ChatBot Assistant** | Voice speech-to-text input, TTS audio playback, image diagnosis, multilingual context switching, powered by Gemini 1.5 Flash |
+| 🔔 **Notifications & Alerts** | Real-time per-user notifications with automatic 30-day TTL cleanup |
+| 💬 **Feedback System** | Star rating, category tagging, and admin response workflow |
+| 👑 **Admin Console** | Analytics overview, user management, broadcast alert system, and full scheme CRUD management |
 
 ---
 
