@@ -1,26 +1,23 @@
 {
-  "buildCommand": "npm run build --prefix client",
+  "version": 2,
+  "buildCommand": "cd client && npm run build",
   "outputDirectory": "client/dist",
-  "installCommand": "npm install --prefix client",
-  "cleanUrls": true,
-  "rewrites": [
-    { "source": "/(.*)", "destination": "/index.html" }
-  ],
-  "headers": [
+  "functions": {
+    "api/index.js": {
+      "includeFiles": "server/**"
+    }
+  },
+  "routes": [
     {
-      "source": "/assets/(.*)",
-      "headers": [
-        { "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }
-      ]
+      "src": "/api/(.*)",
+      "dest": "/api/index.js"
     },
     {
-      "source": "/(.*)",
-      "headers": [
-        { "key": "X-Content-Type-Options", "value": "nosniff" },
-        { "key": "X-Frame-Options", "value": "DENY" },
-        { "key": "X-XSS-Protection", "value": "1; mode=block" },
-        { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" }
-      ]
+      "handle": "filesystem"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/index.html"
     }
   ]
 }
