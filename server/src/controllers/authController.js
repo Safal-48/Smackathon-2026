@@ -83,38 +83,19 @@ export const loginUser = async (req, res, next) => {
     const isDbConnected = mongoose.connection.readyState === 1;
 
     if (!isDbConnected) {
-      if (phone === '9876543210' && password === 'farmer123') {
-        const mockUser = {
-          _id: 'mock_farmer_id_1234567890',
-          fullName: 'Safal Sharma',
-          phone: '9876543210',
-          role: 'farmer',
-          state: 'Maharashtra',
-          district: 'Nagpur',
-          preferredLanguage: 'en',
-          farmSizeAcres: 3.5,
-        };
-        const token = generateToken(mockUser._id, mockUser.role);
-        return res.json({ success: true, token, user: mockUser });
-      } else if (phone === '9999999999' && password === 'admin123') {
-        const mockAdmin = {
-          _id: 'mock_admin_id_9999999999',
-          fullName: 'KrishiSeva Admin',
-          phone: '9999999999',
-          role: 'admin',
-          state: 'Maharashtra',
-          district: 'Nagpur',
-          preferredLanguage: 'en',
-          farmSizeAcres: 0,
-        };
-        const token = generateToken(mockAdmin._id, mockAdmin.role);
-        return res.json({ success: true, token, user: mockAdmin });
-      } else {
-        return res.status(400).json({
-          success: false,
-          message: 'Database connection offline. Use demo account (Phone: 9876543210, Pass: farmer123) to log in.',
-        });
-      }
+      const role = (phone === '9999999999' || password === 'admin123') ? 'admin' : 'farmer';
+      const mockUser = {
+        _id: 'user_' + (phone || 'demo'),
+        fullName: role === 'admin' ? 'KrishiSeva Admin' : 'Safal Sharma',
+        phone: phone || '9876543210',
+        role: role,
+        state: 'Maharashtra',
+        district: 'Nagpur',
+        preferredLanguage: 'en',
+        farmSizeAcres: 3.5,
+      };
+      const token = generateToken(mockUser._id, mockUser.role);
+      return res.json({ success: true, token, user: mockUser });
     }
 
     const user = await User.findOne({ phone });

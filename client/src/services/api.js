@@ -25,16 +25,14 @@ API.interceptors.response.use(
   (error) => {
     const status = error.response?.status;
 
-    // Auto-logout on 401 (expired / invalid token)
+    // Clear invalid token gracefully on 401
     if (status === 401) {
-      const isAuthRoute = error.config?.url?.includes('/auth/');
-      if (!isAuthRoute) {
-        localStorage.removeItem('krishi_token');
-        localStorage.removeItem('krishi_user');
-        // Redirect to login but only if not already there
-        if (window.location.pathname !== '/login') {
-          window.location.href = '/login?session=expired';
-        }
+      localStorage.removeItem('krishi_token');
+      localStorage.removeItem('krishi_user');
+      const protectedPaths = ['/profile', '/admin'];
+      const currentPath = window.location.pathname;
+      if (protectedPaths.some((p) => currentPath.startsWith(p)) && currentPath !== '/login') {
+        window.location.href = '/login?session=expired';
       }
     }
 
