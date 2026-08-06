@@ -229,6 +229,7 @@ export const ChatBot = () => {
   const [loading, setLoading] = useState(false);
   const [isListening, setIsListening] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
+  const [autoVoiceMode, setAutoVoiceMode] = useState(true);
   const [imageFile, setImageFile] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
   const [imageBase64, setImageBase64] = useState(null);
@@ -287,13 +288,22 @@ export const ChatBot = () => {
     const langCodes = { hi: 'hi-IN', mr: 'mr-IN', en: 'en-IN' };
     recognition.lang = langCodes[lang] || 'en-IN';
     recognition.continuous = false;
-    recognition.interimResults = false;
+    recognition.interimResults = true;
 
     recognition.onstart = () => setIsListening(true);
     recognition.onresult = (event) => {
-      const transcript = event.results[0][0].transcript;
-      setInput(transcript);
-      setIsListening(false);
+      let finalTranscript = '';
+      for (let i = event.resultIndex; i < event.results.length; ++i) {
+        if (event.results[i].isFinal) {
+          finalTranscript += event.results[i][0].transcript;
+        } else {
+          setInput(event.results[i][0].transcript);
+        }
+      }
+      if (finalTranscript) {
+        setInput(finalTranscript);
+        setIsListening(false);
+      }
     };
     recognition.onerror = () => setIsListening(false);
     recognition.onend = () => setIsListening(false);
@@ -313,11 +323,18 @@ export const ChatBot = () => {
     }
 
     window.speechSynthesis.cancel();
-    const utterance = new SpeechSynthesisUtterance(text.replace(/[*#•]/g, '').replace(/\n+/g, '. '));
-    const langCodes = { hi: 'hi-IN', mr: 'mr-IN', en: 'en-US' };
-    utterance.lang = langCodes[lang] || 'en-US';
-    utterance.rate = 0.9;
+    const cleanText = text.replace(/[*#•]/g, '').replace(/\n+/g, '. ');
+    const utterance = new SpeechSynthesisUtterance(cleanText);
+    const langCodes = { hi: 'hi-IN', mr: 'mr-IN', en: 'en-IN' };
+    utterance.lang = langCodes[lang] || 'en-IN';
+    utterance.rate = 0.95;
     utterance.pitch = 1.05;
+
+    // Pick best available voice for language
+    const voices = window.speechSynthesis.getVoices();
+    const matchingVoice = voices.find((v) => v.lang === utterance.lang || v.lang.startsWith(utterance.lang.slice(0, 2)));
+    if (matchingVoice) utterance.voice = matchingVoice;
+
     utterance.onstart = () => setIsSpeaking(true);
     utterance.onend = () => setIsSpeaking(false);
     utterance.onerror = () => setIsSpeaking(false);
@@ -382,6 +399,12 @@ export const ChatBot = () => {
           time: getTimestamp(),
         };
         setMessages((prev) => [...prev, aiMsgObj]);
+
+        // Auto-speak response if Voice Assistant mode is ON
+        if (autoVoiceMode) {
+          speakText(res.data.answer);
+        }
+
         // Update conversation history
         setConversationHistory((prev) =>
           prev.map((c) =>
@@ -392,15 +415,17 @@ export const ChatBot = () => {
         );
       }
     } catch (err) {
+      const fallbackText = `I apologize — I'm having trouble connecting to my knowledge servers right now. Please check your internet connection and try again. You can also contact your local Krishi Vigyan Kendra (KVK) for immediate assistance.`;
       setMessages((prev) => [
         ...prev,
         {
           id: Date.now() + 1,
           sender: 'ai',
-          text: `I apologize — I'm having trouble connecting to my knowledge servers right now. Please check your internet connection and try again. You can also contact your local Krishi Vigyan Kendra (KVK) for immediate assistance.`,
+          text: fallbackText,
           time: getTimestamp(),
         },
       ]);
+      if (autoVoiceMode) speakText(fallbackText);
     } finally {
       setLoading(false);
     }
@@ -458,7 +483,44 @@ export const ChatBot = () => {
           </div>
         </div>
 
-        <div className="flex items-center gap-3 w-full sm:w-auto">
+        <div className="flex items-center gap-3 w-full sm:w-auto flex-wrap">
+          {/* Voice Assistant Mode Toggle */}
+          <button
+            onClick={() => {
+              setAutoVoiceMode(!autoVoiceMode);
+              if (isSpeaking) {
+                window.speechSynthesis.cancel();
+                setIsSpeaking(false);
+              }
+            }}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all border ${
+              autoVoiceMode
+                ? 'bg-amber-500/20 border-amber-500/50 text-amber-300 shadow-md shadow-amber-950/20'
+                : 'bg-slate-900 border-slate-800 text-slate-400 hover:text-slate-200'
+            }`}
+            title="Toggle Auto Voice Assistant Readout"
+          >
+            {autoVoiceMode ? <Volume2 className="w-4 h-4 text-amber-400 animate-pulse" /> : <VolumeX className="w-4 h-4" />}
+            <span className="hidden xs:inline">{autoVoiceMode ? 'Voice Assistant ON' : 'Voice Assistant OFF'}</span>
+          </button>
+
+          {/* Speaking Sound Wave Indicator */}
+          {isSpeaking && (
+            <div className="flex items-center gap-1 bg-amber-500/10 border border-amber-500/30 px-2.5 py-1 rounded-xl">
+              <span className="text-[10px] font-bold text-amber-400 uppercase tracking-wider">Speaking</span>
+              <div className="flex items-end gap-0.5 h-3">
+                {[0, 1, 2, 3].map((i) => (
+                  <motion.div
+                    key={i}
+                    className="w-1 bg-amber-400 rounded-full"
+                    animate={{ height: ['20%', '100%', '30%'] }}
+                    transition={{ duration: 0.5, repeat: Infinity, delay: i * 0.1, ease: 'easeInOut' }}
+                  />
+                ))}
+              </div>
+            </div>
+          )}
+
           {/* Language Switcher */}
           <div className="flex items-center gap-1 bg-slate-900/90 border border-slate-800 p-1 rounded-xl">
             <Globe className="w-3.5 h-3.5 text-amber-400 ml-1.5" />
@@ -574,6 +636,30 @@ export const ChatBot = () => {
                 <p className="text-[10px] text-amber-400 mt-1.5 font-semibold">
                   AI will visually diagnose this crop/soil image. Add your question below and send.
                 </p>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          {/* Listening Speech-to-Text Banner */}
+          <AnimatePresence>
+            {isListening && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                exit={{ opacity: 0, height: 0 }}
+                className="border-t border-rose-500/30 bg-rose-500/10 px-4 py-2.5 flex items-center justify-between"
+              >
+                <div className="flex items-center gap-2 text-xs font-semibold text-rose-300">
+                  <div className="w-2.5 h-2.5 rounded-full bg-rose-500 animate-ping" />
+                  <span>🎤 {t('voiceListening')} Speak your question clearly...</span>
+                </div>
+                <button
+                  type="button"
+                  onClick={toggleListening}
+                  className="text-[10px] uppercase font-bold text-rose-400 bg-rose-500/20 px-2 py-0.5 rounded hover:bg-rose-500/30"
+                >
+                  Stop
+                </button>
               </motion.div>
             )}
           </AnimatePresence>
