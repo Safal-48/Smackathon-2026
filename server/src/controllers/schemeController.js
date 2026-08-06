@@ -48,6 +48,9 @@ const MOCK_SCHEMES = [
     applicationDeadline: '31st December 2026 (Open)',
     applicationUrl: 'https://pmkisan.gov.in',
     isActive: true,
+    audioExplainer: 'Under PM Kisan Samman Nidhi, you receive 6,000 rupees every year in three equal installments directly into your bank account. All small and marginal landholding farmers are eligible.',
+    audioExplainerHindi: 'पीएम किसान सम्मान निधि योजना में आपको साल के ₹6,000 तीन बराबर किश्तों में सीधे आपके बैंक खाते में मिलते हैं। इसके लिए सभी छोटे और सीमांत किसान पात्र हैं।',
+    audioExplainerMarathi: 'पीएम किसान सन्मान निधी योजनेमध्ये तुम्हाला वर्षाला ₹६,००० तीन समान हप्त्यांमध्ये थेट बँक खात्यात मिळतात. यासाठी सर्व लहान व सीमांत शेतकरी पात्र आहेत.',
   },
   {
     _id: 'scheme_2',
@@ -94,6 +97,9 @@ const MOCK_SCHEMES = [
     applicationDeadline: '31st July 2026 (Kharif Cutoff)',
     applicationUrl: 'https://pmfby.gov.in',
     isActive: true,
+    audioExplainer: 'Pradhan Mantri Fasal Bima Yojana offers full insurance coverage for crop losses caused by drought, flood, or pests with minimal premium rates starting at 2%.',
+    audioExplainerHindi: 'प्रधानमंत्री फसल बीमा योजना में सूखा, बाढ़ या कीट हमले से फसल नुकसान होने पर पूरा बीमा क्लेम मिलता है। खरीफ फसलों पर केवल 2 प्रतिशत प्रीमियम देना होता है।',
+    audioExplainerMarathi: 'पंतप्रधान पीक विमा योजनेमध्ये दुष्काळ, पूर किंवा किडीमुळे पिकांचे नुकसान झाल्यास संपूर्ण विमा संरक्षण मिळते. खरीप पिकांसाठी केवळ २ टक्के विमा हप्ता आहे.',
   },
   {
     _id: 'scheme_3',
@@ -140,6 +146,9 @@ const MOCK_SCHEMES = [
     applicationDeadline: '31st October 2026',
     applicationUrl: 'https://pmksy.gov.in',
     isActive: true,
+    audioExplainer: 'Under PM Krishi Sinchayee Yojana, small and marginal farmers get up to 55% government subsidy for installing drip and sprinkler irrigation systems.',
+    audioExplainerHindi: 'प्रधानमंत्री कृषि सिंचाई योजना में ड्रिप और स्प्रिंकलर सिंचाई सेट लगाने पर 55 प्रतिशत तक की सरकारी सब्सिडी मिलती है, जिससे 50 प्रतिशत पानी की बचत होती है।',
+    audioExplainerMarathi: 'पंतप्रधान कृषी सिंचन योजनेमध्ये ठिबक आणि तुषार सिंचन संच बसवण्यासाठी ५५ टक्क्यांपर्यंत शासकीय अनुदान मिळते.',
   },
   {
     _id: 'scheme_4',
@@ -186,6 +195,9 @@ const MOCK_SCHEMES = [
     applicationDeadline: '15th November 2026',
     applicationUrl: 'https://pmkusum.mnre.gov.in',
     isActive: true,
+    audioExplainer: 'PM-KUSUM scheme provides up to 60% total subsidy for installing solar agriculture pumps, ensuring reliable daytime irrigation without electricity bills.',
+    audioExplainerHindi: 'पीएम कुसुम योजना में खेतों में सोलर पंप लगाने के लिए 60 प्रतिशत कुल सब्सिडी मिलती है, जिससे दिन के समय बिना किसी बिजली बिल के मुफ्त सिंचाई होती है।',
+    audioExplainerMarathi: 'पीएम कुसुम योजनेमध्ये शेतावर सौर पंप बसवण्यासाठी ६० टक्के अनुदान मिळते, ज्यामुळे विना वीजबिल दिवसा सिंचन करता येते.',
   },
   {
     _id: 'scheme_5',

@@ -52,6 +52,8 @@ export const Schemes = () => {
   const [applicationSuccess, setApplicationSuccess] = useState(false);
   const [farmerNotes, setFarmerNotes] = useState('');
   const [isSpeaking, setIsSpeaking] = useState(false);
+  const [speakingSchemeId, setSpeakingSchemeId] = useState(null);
+  const [speakingText, setSpeakingText] = useState('');
 
   const fetchSchemes = async () => {
     setLoading(true);
@@ -107,6 +109,7 @@ export const Schemes = () => {
           setFarmerNotes('');
           if ('speechSynthesis' in window) window.speechSynthesis.cancel();
           setIsSpeaking(false);
+          setSpeakingSchemeId(null);
         }, 1800);
       }
     } catch (err) {
@@ -118,6 +121,57 @@ export const Schemes = () => {
     setSelectedScheme(null);
     if ('speechSynthesis' in window) window.speechSynthesis.cancel();
     setIsSpeaking(false);
+    setSpeakingSchemeId(null);
+  };
+
+  const getSchemeAudioExplainer = (scheme) => {
+    if (lang === 'hi') {
+      return scheme.audioExplainerHindi || `${scheme.titleHindi || scheme.title} में आपको ${scheme.benefits?.[0] || 'सरकारी वित्तीय सहायता'} का लाभ मिलता है। सभी योग्य किसान इसके लिए आवेदन कर सकते हैं।`;
+    }
+    if (lang === 'mr') {
+      return scheme.audioExplainerMarathi || `${scheme.titleMarathi || scheme.title} मध्ये तुम्हाला ${scheme.benefits?.[0] || 'सरकारी अर्थसहाय्य'} चा लाभ मिळतो. सर्व पात्र शेतकरी अर्ज करू शकतात.`;
+    }
+    return scheme.audioExplainer || `Under ${scheme.title}, you receive ${scheme.benefits?.[0] || 'financial support and subsidies'}. Check eligibility details to apply.`;
+  };
+
+  const toggleSchemeAudio = (scheme) => {
+    if (!('speechSynthesis' in window)) {
+      alert('Speech Synthesis is not supported in your browser.');
+      return;
+    }
+
+    if (speakingSchemeId === scheme._id) {
+      window.speechSynthesis.cancel();
+      setSpeakingSchemeId(null);
+      setIsSpeaking(false);
+      setSpeakingText('');
+      return;
+    }
+
+    window.speechSynthesis.cancel();
+    const textToSpeak = getSchemeAudioExplainer(scheme);
+    const utterance = new SpeechSynthesisUtterance(textToSpeak);
+
+    if (lang === 'hi') utterance.lang = 'hi-IN';
+    else if (lang === 'mr') utterance.lang = 'mr-IN';
+    else utterance.lang = 'en-US';
+
+    utterance.onend = () => {
+      setSpeakingSchemeId(null);
+      setIsSpeaking(false);
+      setSpeakingText('');
+    };
+
+    utterance.onerror = () => {
+      setSpeakingSchemeId(null);
+      setIsSpeaking(false);
+      setSpeakingText('');
+    };
+
+    window.speechSynthesis.speak(utterance);
+    setSpeakingSchemeId(scheme._id);
+    setIsSpeaking(true);
+    setSpeakingText(textToSpeak);
   };
 
   const toggleReadAloud = (schemeTitle, steps, docs) => {
@@ -129,21 +183,34 @@ export const Schemes = () => {
     if (isSpeaking) {
       window.speechSynthesis.cancel();
       setIsSpeaking(false);
+      setSpeakingSchemeId(null);
+      setSpeakingText('');
       return;
     }
 
-    const textToRead = `${t('howToApply')} - ${schemeTitle}. ${t('stepsTitle')}: ${steps.join('. ')}. ${t('docsTitle')}: ${docs.join(', ')}.`;
+    const currentExplainer = selectedScheme ? getSchemeAudioExplainer(selectedScheme) : `${t('howToApply')} - ${schemeTitle}. ${t('stepsTitle')}: ${steps.join('. ')}.`;
+    const textToRead = `${currentExplainer} ${t('stepsTitle')}: ${steps.join('. ')}.`;
     const utterance = new SpeechSynthesisUtterance(textToRead);
 
     if (lang === 'hi') utterance.lang = 'hi-IN';
     else if (lang === 'mr') utterance.lang = 'mr-IN';
     else utterance.lang = 'en-US';
 
-    utterance.onend = () => setIsSpeaking(false);
-    utterance.onerror = () => setIsSpeaking(false);
+    utterance.onend = () => {
+      setIsSpeaking(false);
+      setSpeakingSchemeId(null);
+      setSpeakingText('');
+    };
+    utterance.onerror = () => {
+      setIsSpeaking(false);
+      setSpeakingSchemeId(null);
+      setSpeakingText('');
+    };
 
     window.speechSynthesis.speak(utterance);
     setIsSpeaking(true);
+    if (selectedScheme) setSpeakingSchemeId(selectedScheme._id);
+    setSpeakingText(textToRead);
   };
 
   useEffect(() => {
@@ -439,30 +506,80 @@ export const Schemes = () => {
                       ))}
                     </div>
 
+                    {/* Spoken AI Audio Transcript Banner */}
+                    {speakingSchemeId === scheme._id && (
+                      <motion.div
+                        initial={{ opacity: 0, y: -4 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="p-3 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs flex items-start gap-2.5 shadow-lg shadow-amber-950/40"
+                      >
+                        <Volume2 className="w-4 h-4 shrink-0 text-amber-400 mt-0.5 animate-pulse" />
+                        <div className="space-y-0.5">
+                          <div className="flex items-center gap-2">
+                            <span className="font-bold text-[10px] text-amber-400 uppercase tracking-wider">
+                              AI Audio Explainer Speaking ({lang.toUpperCase()})
+                            </span>
+                            <div className="flex items-center gap-0.5 h-3">
+                              <span className="w-0.5 h-2.5 bg-amber-400 animate-pulse" />
+                              <span className="w-0.5 h-3.5 bg-amber-300 animate-pulse delay-75" />
+                              <span className="w-0.5 h-2 bg-amber-400 animate-pulse delay-150" />
+                            </div>
+                          </div>
+                          <p className="italic text-slate-200 text-xs font-medium leading-relaxed">
+                            "{speakingText}"
+                          </p>
+                        </div>
+                      </motion.div>
+                    )}
+
                   </div>
 
                   {/* Card Bottom Actions */}
                   <div className="pt-3 flex flex-wrap items-center justify-between gap-3 border-t border-slate-800/80">
                     <button
-                      onClick={() => {
-                        setSelectedScheme(scheme);
-                        setModalTab('howToApply');
-                      }}
-                      className="px-4 py-2.5 rounded-xl bg-emerald-950/80 border border-emerald-500/40 text-emerald-300 font-bold text-xs hover:bg-emerald-900/90 flex items-center gap-2 transition-all shadow-sm"
+                      type="button"
+                      onClick={() => toggleSchemeAudio(scheme)}
+                      className={`px-3.5 py-2 rounded-xl font-bold text-xs transition-all flex items-center gap-2 shadow-sm ${
+                        speakingSchemeId === scheme._id
+                          ? 'bg-amber-500 text-slate-950 shadow-amber-500/20 animate-pulse'
+                          : 'bg-slate-900 hover:bg-slate-800 border border-slate-700 text-emerald-400 hover:text-emerald-300'
+                      }`}
                     >
-                      <FileText className="w-4 h-4 text-emerald-400" />
-                      {t('viewDocsBtn')}
+                      {speakingSchemeId === scheme._id ? (
+                        <>
+                          <VolumeX className="w-4 h-4" />
+                          <span>Stop Audio</span>
+                        </>
+                      ) : (
+                        <>
+                          <Volume2 className="w-4 h-4 text-emerald-400" />
+                          <span>🔊 AI Audio Explainer</span>
+                        </>
+                      )}
                     </button>
 
-                    <button
-                      onClick={() => {
-                        setSelectedScheme(scheme);
-                        setModalTab('howToApply');
-                      }}
-                      className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-500 hover:from-emerald-500 hover:to-teal-500 text-slate-950 font-bold text-xs transition-all shadow-lg shadow-emerald-950/50"
-                    >
-                      View Eligibility & Apply
-                    </button>
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => {
+                          setSelectedScheme(scheme);
+                          setModalTab('howToApply');
+                        }}
+                        className="px-4 py-2 rounded-xl bg-emerald-950/80 border border-emerald-500/40 text-emerald-300 font-bold text-xs hover:bg-emerald-900/90 flex items-center gap-2 transition-all shadow-sm"
+                      >
+                        <FileText className="w-4 h-4 text-emerald-400" />
+                        {t('viewDocsBtn')}
+                      </button>
+
+                      <button
+                        onClick={() => {
+                          setSelectedScheme(scheme);
+                          setModalTab('howToApply');
+                        }}
+                        className="px-5 py-2 rounded-xl bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-500 hover:from-emerald-500 hover:to-teal-500 text-slate-950 font-bold text-xs transition-all shadow-lg shadow-emerald-950/50"
+                      >
+                        View Eligibility & Apply
+                      </button>
+                    </div>
                   </div>
 
                 </div>
