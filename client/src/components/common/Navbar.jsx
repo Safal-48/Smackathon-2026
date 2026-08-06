@@ -1,13 +1,15 @@
 import React, { useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { Link as RouterLink } from 'react-router-dom';
-import { Sprout, Shield, Bot, LayoutDashboard, Globe, LogOut, User as UserIcon, Menu, X } from 'lucide-react';
+import { Sprout, Shield, Bot, LayoutDashboard, Globe, LogOut, User as UserIcon, Menu, X, Sun, Moon } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useLanguage } from '../../context/LanguageContext';
+import { useTheme } from '../../context/ThemeContext';
 
 export const Navbar = () => {
   const { user, logout } = useAuth();
   const { lang, setLang, t } = useLanguage();
+  const { theme, toggleTheme } = useTheme();
   const location = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -60,8 +62,27 @@ export const Navbar = () => {
             })}
           </div>
 
-          {/* Right Actions: Language Switcher & Auth */}
+          {/* Right Actions: Language Switcher, Theme Toggle & Auth */}
           <div className="hidden md:flex items-center gap-3">
+            {/* Dark/Light Mode Toggle Button */}
+            <button
+              onClick={toggleTheme}
+              className="p-2 rounded-xl glass-panel hover:bg-emerald-500/10 border border-emerald-500/20 text-slate-300 hover:text-emerald-400 transition-all flex items-center gap-1.5 text-xs font-semibold"
+              title={`Switch to ${theme === 'dark' ? 'Light' : 'Dark'} Mode`}
+            >
+              {theme === 'dark' ? (
+                <>
+                  <Sun className="w-4 h-4 text-amber-400 animate-spin" style={{ animationDuration: '16s' }} />
+                  <span className="text-[11px] font-bold text-amber-300">Light Mode</span>
+                </>
+              ) : (
+                <>
+                  <Moon className="w-4 h-4 text-emerald-600" />
+                  <span className="text-[11px] font-bold text-emerald-800">Dark Mode</span>
+                </>
+              )}
+            </button>
+
             {/* Multilingual Dropdown Selector */}
             <div className="flex items-center gap-1 bg-slate-800/80 border border-slate-700/60 rounded-lg px-2 py-1 text-xs text-slate-300">
               <Globe className="w-3.5 h-3.5 text-emerald-400" />
@@ -107,8 +128,15 @@ export const Navbar = () => {
             )}
           </div>
 
-          {/* Mobile Menu Button */}
+          {/* Mobile Menu Button & Mobile Theme Toggle */}
           <div className="flex md:hidden items-center gap-2">
+            <button
+              onClick={toggleTheme}
+              className="p-1.5 rounded-lg bg-slate-800 border border-slate-700 text-slate-300"
+              title="Toggle Theme"
+            >
+              {theme === 'dark' ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4 text-emerald-600" />}
+            </button>
             <select
               value={lang}
               onChange={(e) => setLang(e.target.value)}

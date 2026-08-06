@@ -23,7 +23,7 @@ export const registerUser = async (req, res, next) => {
     if (!isDbConnected) {
       const mockUser = {
         _id: 'mock_user_' + Date.now(),
-        fullName: fullName + ' (Offline Mock)',
+        fullName: fullName,
         phone,
         role: role || 'farmer',
         state: state || 'Maharashtra',
@@ -86,7 +86,7 @@ export const loginUser = async (req, res, next) => {
       if (phone === '9876543210' && password === 'farmer123') {
         const mockUser = {
           _id: 'mock_farmer_id_1234567890',
-          fullName: 'Safal Sharma (Offline Mock)',
+          fullName: 'Safal Sharma',
           phone: '9876543210',
           role: 'farmer',
           state: 'Maharashtra',
@@ -99,7 +99,7 @@ export const loginUser = async (req, res, next) => {
       } else if (phone === '9999999999' && password === 'admin123') {
         const mockAdmin = {
           _id: 'mock_admin_id_9999999999',
-          fullName: 'KrishiSeva Admin (Offline Mock)',
+          fullName: 'KrishiSeva Admin',
           phone: '9999999999',
           role: 'admin',
           state: 'Maharashtra',

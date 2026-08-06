@@ -3,10 +3,12 @@ import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'r
 import { AnimatePresence, motion } from 'framer-motion';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { LanguageProvider } from './context/LanguageContext';
+import { ThemeProvider } from './context/ThemeContext';
 import { ToastProvider } from './context/ToastContext';
 import ErrorBoundary from './components/common/ErrorBoundary';
 
 import { CustomCursor } from './components/common/CustomCursor';
+import { ScrollProgress } from './components/common/ScrollProgress';
 import { LoadingScreen } from './components/common/LoadingScreen';
 import { Navbar } from './components/common/Navbar';
 import { Footer } from './components/common/Footer';
@@ -103,30 +105,33 @@ export default function App() {
   return (
     <ErrorBoundary>
       <AuthProvider>
-        <LanguageProvider>
-          <ToastProvider>
-            <AnimatePresence mode="wait">
-              {!loadingComplete && (
-                <LoadingScreen key="loader" onComplete={() => setLoadingComplete(true)} />
-              )}
-            </AnimatePresence>
+        <ThemeProvider>
+          <LanguageProvider>
+            <ToastProvider>
+              <AnimatePresence mode="wait">
+                {!loadingComplete && (
+                  <LoadingScreen key="loader" onComplete={() => setLoadingComplete(true)} />
+                )}
+              </AnimatePresence>
 
-            {loadingComplete && (
-              <Router>
-                <div className="flex flex-col min-h-screen bg-slate-950 text-slate-100 selection:bg-emerald-500 selection:text-slate-950 relative overflow-x-hidden">
-                  <CustomCursor />
-                  <Navbar />
-                  <main id="main-content" className="flex-1 z-10" role="main">
-                    <ErrorBoundary>
-                      <AnimatedRoutes />
-                    </ErrorBoundary>
-                  </main>
-                  <Footer />
-                </div>
-              </Router>
-            )}
-          </ToastProvider>
-        </LanguageProvider>
+              {loadingComplete && (
+                <Router>
+                  <div className="flex flex-col min-h-screen selection:bg-emerald-500 selection:text-slate-950 relative overflow-x-hidden">
+                    <CustomCursor />
+                    <ScrollProgress totalSections={3} />
+                    <Navbar />
+                    <main id="main-content" className="flex-1 z-10" role="main">
+                      <ErrorBoundary>
+                        <AnimatedRoutes />
+                      </ErrorBoundary>
+                    </main>
+                    <Footer />
+                  </div>
+                </Router>
+              )}
+            </ToastProvider>
+          </LanguageProvider>
+        </ThemeProvider>
       </AuthProvider>
     </ErrorBoundary>
   );

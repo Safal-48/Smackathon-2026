@@ -43,6 +43,11 @@ const schemeSchema = new mongoose.Schema(
     benefitsHindi: [String],
     benefitsMarathi: [String],
     requiredDocuments: [String],
+    requiredDocumentsHindi: [String],
+    requiredDocumentsMarathi: [String],
+    applicationSteps: [String],
+    applicationStepsHindi: [String],
+    applicationStepsMarathi: [String],
     applicationDeadline: {
       type: String,
       default: '31st March 2027 (Ongoing)',

@@ -1,55 +1,64 @@
-import React, { useEffect, useState } from 'react';
-import { motion } from 'framer-motion';
+import React, { useEffect, useRef } from 'react';
 
 export const CustomCursor = () => {
-  const [mousePosition, setMousePosition] = useState({ x: -100, y: -100 });
-  const [isHovered, setIsHovered] = useState(false);
+  const innerRef = useRef(null);
+  const outerRef = useRef(null);
 
   useEffect(() => {
+    const inner = innerRef.current;
+    const outer = outerRef.current;
+    if (!inner || !outer) return;
+
+    let mouseX = -100, mouseY = -100;
+    let outerX = -100, outerY = -100;
+    let animId;
+
     const handleMouseMove = (e) => {
-      setMousePosition({ x: e.clientX, y: e.clientY });
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+      inner.style.left = `${mouseX}px`;
+      inner.style.top = `${mouseY}px`;
 
       const target = e.target;
-      if (
+      const isHoverable =
         target.tagName === 'BUTTON' ||
         target.tagName === 'A' ||
         target.closest('button') ||
         target.closest('a') ||
-        target.getAttribute('role') === 'button'
-      ) {
-        setIsHovered(true);
+        target.closest('.hover-target') ||
+        target.getAttribute('role') === 'button';
+
+      if (isHoverable) {
+        inner.classList.add('hovering');
+        outer.classList.add('hovering');
       } else {
-        setIsHovered(false);
+        inner.classList.remove('hovering');
+        outer.classList.remove('hovering');
       }
     };
 
+    const animateCursor = () => {
+      outerX += (mouseX - outerX) * 0.15;
+      outerY += (mouseY - outerY) * 0.15;
+      outer.style.left = `${outerX}px`;
+      outer.style.top = `${outerY}px`;
+      animId = requestAnimationFrame(animateCursor);
+    };
+
     window.addEventListener('mousemove', handleMouseMove);
-    return () => window.removeEventListener('mousemove', handleMouseMove);
+    animId = requestAnimationFrame(animateCursor);
+
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      cancelAnimationFrame(animId);
+    };
   }, []);
 
   return (
-    <div className="pointer-events-none fixed inset-0 z-50 overflow-hidden">
-      {/* Outer Glowing Ring */}
-      <motion.div
-        className="absolute w-8 h-8 rounded-full border border-emerald-400/60 bg-emerald-500/10 backdrop-blur-[2px]"
-        animate={{
-          x: mousePosition.x - 16,
-          y: mousePosition.y - 16,
-          scale: isHovered ? 2 : 1,
-          borderColor: isHovered ? '#34d399' : 'rgba(52, 211, 153, 0.4)',
-        }}
-        transition={{ type: 'spring', damping: 25, stiffness: 350, mass: 0.5 }}
-      />
-      {/* Inner Crisp Dot */}
-      <motion.div
-        className="absolute w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_12px_#34d399]"
-        animate={{
-          x: mousePosition.x - 4,
-          y: mousePosition.y - 4,
-          scale: isHovered ? 0.5 : 1,
-        }}
-        transition={{ type: 'spring', damping: 30, stiffness: 400, mass: 0.1 }}
-      />
-    </div>
+    <>
+      <div className="cursor-inner" ref={innerRef} id="cursorInner" />
+      <div className="cursor-outer" ref={outerRef} id="cursorOuter" />
+    </>
   );
 };
+

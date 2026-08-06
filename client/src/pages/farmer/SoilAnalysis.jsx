@@ -15,11 +15,13 @@ import {
   Lightbulb,
   ShieldCheck,
   Image as ImageIcon,
+  Camera,
 } from 'lucide-react';
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar } from 'recharts';
 import API from '../../services/api';
 import { useLanguage } from '../../context/LanguageContext';
 import { Card3D } from '../../components/common/Card3D';
+import { CameraModal } from '../../components/common/CameraModal';
 
 export const SoilAnalysis = () => {
   const { t } = useLanguage();
@@ -27,6 +29,11 @@ export const SoilAnalysis = () => {
   const [bluetoothConnecting, setBluetoothConnecting] = useState(false);
   const [bluetoothConnected, setBluetoothConnected] = useState(false);
   const [soilImagePreview, setSoilImagePreview] = useState(null);
+  const [cameraModalOpen, setCameraModalOpen] = useState(false);
+
+  const handleCameraCapture = (imageDataUrl) => {
+    setSoilImagePreview(imageDataUrl);
+  };
 
   const [formData, setFormData] = useState({
     nitrogen: 65,
@@ -110,11 +117,11 @@ export const SoilAnalysis = () => {
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
       
       {/* Header */}
-      <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 glass-panel p-6 rounded-3xl border border-emerald-500/20 shadow-xl">
+      <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 glass-panel p-6 rounded-3xl border border-emerald-500/30 shadow-xl gpu-layer">
         <div>
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-bold mb-2">
             <Sparkles className="w-3.5 h-3.5" />
-            AI Soil Diagnostic & Agronomic Machine Learning Model
+            {t('aiDiagnosticSummary')}
           </div>
           <h1 className="text-2xl md:text-4xl font-black text-slate-100 flex items-center gap-3">
             <Sprout className="w-8 h-8 text-emerald-400" />
@@ -135,10 +142,10 @@ export const SoilAnalysis = () => {
         >
           <Bluetooth className={`w-4 h-4 ${bluetoothConnecting ? 'animate-bounce text-indigo-400' : ''}`} />
           {bluetoothConnecting
-            ? 'Pairing IoT NPK Sensor...'
+            ? t('pairingSensor')
             : bluetoothConnected
-            ? 'IoT Probe Synced (100%)'
-            : 'Pair Portable Bluetooth Sensor'}
+            ? t('sensorSynced')
+            : t('pairBluetoothBtn')}
         </button>
       </div>
 
@@ -148,14 +155,25 @@ export const SoilAnalysis = () => {
         <div className="lg:col-span-5 glass-panel p-6 rounded-3xl border border-slate-800 space-y-6">
           <h2 className="text-lg font-bold text-slate-100 border-b border-slate-800 pb-3 flex items-center gap-2">
             <Zap className="w-5 h-5 text-amber-400" />
-            Soil Nutrient Parameters & Image Upload
+            {t('soilNutrientHeader')}
           </h2>
 
           <form onSubmit={handleSubmit} className="space-y-4">
             
-            {/* Image Upload Box */}
+            {/* Image Upload Box with Live Camera Support */}
             <div>
-              <label className="text-xs font-semibold text-slate-300 block mb-1">Soil Texture / Plot Photo Upload</label>
+              <div className="flex items-center justify-between mb-1">
+                <label className="text-xs font-semibold text-slate-300">{t('soilPhotoUpload')}</label>
+                <button
+                  type="button"
+                  onClick={() => setCameraModalOpen(true)}
+                  className="flex items-center gap-1.5 px-3 py-1 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 text-emerald-300 text-xs font-bold transition-all"
+                >
+                  <Camera className="w-3.5 h-3.5 text-emerald-400" />
+                  {t('takeLivePhoto')}
+                </button>
+              </div>
+
               <div className="relative border-2 border-dashed border-slate-800 hover:border-emerald-500/50 rounded-2xl p-4 text-center cursor-pointer transition-colors bg-slate-900/60">
                 <input
                   type="file"
@@ -164,26 +182,49 @@ export const SoilAnalysis = () => {
                   className="absolute inset-0 opacity-0 cursor-pointer w-full h-full"
                 />
                 {soilImagePreview ? (
-                  <div className="flex items-center justify-center gap-3">
-                    <img src={soilImagePreview} alt="Soil sample" className="w-14 h-14 rounded-xl object-cover border border-emerald-500/40" />
-                    <div className="text-left text-xs">
-                      <span className="text-emerald-400 font-bold block">Soil Sample Uploaded</span>
-                      <span className="text-slate-400 text-[11px]">Click to replace image</span>
+                  <div className="flex items-center justify-between gap-3">
+                    <div className="flex items-center gap-3">
+                      <img src={soilImagePreview} alt="Soil sample" className="w-14 h-14 rounded-xl object-cover border border-emerald-500/40" />
+                      <div className="text-left text-xs">
+                        <span className="text-emerald-400 font-bold block">Crop / Soil Photo Ready</span>
+                        <span className="text-slate-400 text-[11px]">Click or drag to replace photo</span>
+                      </div>
                     </div>
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setSoilImagePreview(null);
+                      }}
+                      className="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-red-500/20 text-slate-400 hover:text-red-400 text-xs transition-colors"
+                    >
+                      Remove
+                    </button>
                   </div>
                 ) : (
-                  <div className="flex flex-col items-center gap-1.5 py-2">
-                    <Upload className="w-6 h-6 text-emerald-400" />
-                    <span className="text-xs text-slate-300 font-medium">Click or Drag Soil Image here</span>
+                  <div className="flex flex-col items-center gap-2 py-2">
+                    <div className="flex items-center gap-3">
+                      <Upload className="w-6 h-6 text-emerald-400" />
+                      <span className="text-slate-600 font-bold text-xs">OR</span>
+                      <Camera className="w-6 h-6 text-cyan-400" />
+                    </div>
+                    <span className="text-xs text-slate-300 font-medium">{t('dragOrCamera')}</span>
                     <span className="text-[10px] text-slate-500">Supports JPG, PNG (Max 5MB)</span>
                   </div>
                 )}
               </div>
             </div>
 
+            {/* Camera Modal Popup */}
+            <CameraModal
+              isOpen={cameraModalOpen}
+              onClose={() => setCameraModalOpen(false)}
+              onCapture={handleCameraCapture}
+            />
+
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="text-xs font-semibold text-slate-300 block mb-1">Nitrogen (N) [kg/ha]</label>
+                <label className="text-xs font-semibold text-slate-300 block mb-1">{t('nitrogenLabel')}</label>
                 <input
                   type="number"
                   name="nitrogen"
@@ -195,7 +236,7 @@ export const SoilAnalysis = () => {
               </div>
 
               <div>
-                <label className="text-xs font-semibold text-slate-300 block mb-1">Phosphorus (P) [kg/ha]</label>
+                <label className="text-xs font-semibold text-slate-300 block mb-1">{t('phosphorusLabel')}</label>
                 <input
                   type="number"
                   name="phosphorus"
@@ -209,7 +250,7 @@ export const SoilAnalysis = () => {
 
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="text-xs font-semibold text-slate-300 block mb-1">Potassium (K) [kg/ha]</label>
+                <label className="text-xs font-semibold text-slate-300 block mb-1">{t('potassiumLabel')}</label>
                 <input
                   type="number"
                   name="potassium"
@@ -221,7 +262,7 @@ export const SoilAnalysis = () => {
               </div>
 
               <div>
-                <label className="text-xs font-semibold text-slate-300 block mb-1">Soil pH Balance</label>
+                <label className="text-xs font-semibold text-slate-300 block mb-1">{t('phLabel')}</label>
                 <input
                   type="number"
                   step="0.1"
@@ -236,7 +277,7 @@ export const SoilAnalysis = () => {
 
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="text-xs font-semibold text-slate-300 block mb-1">Moisture (%)</label>
+                <label className="text-xs font-semibold text-slate-300 block mb-1">{t('moistureLabel')}</label>
                 <input
                   type="number"
                   name="moisture"
@@ -247,7 +288,7 @@ export const SoilAnalysis = () => {
               </div>
 
               <div>
-                <label className="text-xs font-semibold text-slate-300 block mb-1">Organic Carbon (%)</label>
+                <label className="text-xs font-semibold text-slate-300 block mb-1">{t('organicCarbonLabel')}</label>
                 <input
                   type="number"
                   step="0.01"
@@ -261,7 +302,7 @@ export const SoilAnalysis = () => {
 
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="text-xs font-semibold text-slate-300 block mb-1">Soil Type</label>
+                <label className="text-xs font-semibold text-slate-300 block mb-1">{t('soilTypeLabel')}</label>
                 <select
                   name="soilType"
                   value={formData.soilType}
@@ -277,7 +318,7 @@ export const SoilAnalysis = () => {
               </div>
 
               <div>
-                <label className="text-xs font-semibold text-slate-300 block mb-1">Plot Alias</label>
+                <label className="text-xs font-semibold text-slate-300 block mb-1">{t('plotAliasLabel')}</label>
                 <input
                   type="text"
                   name="locationName"

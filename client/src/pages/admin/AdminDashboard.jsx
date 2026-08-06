@@ -16,6 +16,7 @@ export const AdminDashboard = () => {
     fullDescription: '',
     benefits: '',
     requiredDocuments: '',
+    applicationSteps: '',
   });
 
   const fetchAdminStats = async () => {
@@ -42,6 +43,7 @@ export const AdminDashboard = () => {
         ...newScheme,
         benefits: newScheme.benefits.split(',').map((b) => b.trim()),
         requiredDocuments: newScheme.requiredDocuments.split(',').map((d) => d.trim()),
+        applicationSteps: newScheme.applicationSteps ? newScheme.applicationSteps.split(',').map((s) => s.trim()) : [],
       };
 
       const res = await API.post('/admin/schemes', payload);
@@ -208,6 +210,14 @@ export const AdminDashboard = () => {
                 placeholder="Required Documents (comma separated)"
                 value={newScheme.requiredDocuments}
                 onChange={(e) => setNewScheme({ ...newScheme, requiredDocuments: e.target.value })}
+                className="w-full bg-slate-900 border border-slate-800 p-2.5 rounded-xl text-slate-100 outline-none"
+              />
+
+              <input
+                type="text"
+                placeholder="Application Steps (comma separated)"
+                value={newScheme.applicationSteps}
+                onChange={(e) => setNewScheme({ ...newScheme, applicationSteps: e.target.value })}
                 className="w-full bg-slate-900 border border-slate-800 p-2.5 rounded-xl text-slate-100 outline-none"
               />
 

@@ -25,9 +25,11 @@ import {
   Copy,
   Check,
   MessageSquare,
+  Camera,
 } from 'lucide-react';
 import API from '../../services/api';
 import { useLanguage } from '../../context/LanguageContext';
+import { CameraModal } from '../../components/common/CameraModal';
 
 // ─── AI Topic Suggestion Chips ───────────────────────────────────────────────
 const TOPIC_SUGGESTIONS = {
@@ -230,6 +232,13 @@ export const ChatBot = () => {
   const [imageFile, setImageFile] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
   const [imageBase64, setImageBase64] = useState(null);
+  const [cameraModalOpen, setCameraModalOpen] = useState(false);
+
+  const handleCameraCapture = (imageDataUrl) => {
+    setImagePreview(imageDataUrl);
+    setImageBase64(imageDataUrl.includes(',') ? imageDataUrl.split(',')[1] : imageDataUrl);
+    setImageFile({ name: 'camera_capture.jpg' });
+  };
   const [showSuggestions, setShowSuggestions] = useState(true);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [activeConversation, setActiveConversation] = useState('chat_1');
@@ -430,7 +439,7 @@ export const ChatBot = () => {
     <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6 h-[calc(100vh-5rem)] flex flex-col gap-4">
 
       {/* Header Banner */}
-      <div className="glass-panel p-4 sm:p-5 rounded-3xl border border-amber-500/20 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-2xl shrink-0">
+      <div className="glass-panel p-4 sm:p-5 rounded-3xl border border-emerald-500/30 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-2xl shrink-0 gpu-layer">
         <div className="flex items-center gap-4">
           <div className="relative">
             <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-amber-500 to-orange-400 text-slate-950 flex items-center justify-center shadow-lg shadow-amber-950/40">
@@ -573,7 +582,7 @@ export const ChatBot = () => {
           <div className="border-t border-slate-800 p-3 sm:p-4">
             <form onSubmit={handleSend} className="flex items-end gap-2">
 
-              {/* Image Upload */}
+              {/* Image Upload from File */}
               <input
                 ref={fileInputRef}
                 type="file"
@@ -585,10 +594,27 @@ export const ChatBot = () => {
               <label
                 htmlFor="chat-image-input"
                 className="shrink-0 p-3 rounded-2xl bg-slate-900 border border-slate-800 text-slate-400 hover:text-amber-400 hover:border-amber-500/40 cursor-pointer transition-all"
-                title="Upload crop / soil image for AI diagnosis"
+                title={t('uploadCropPhoto')}
               >
                 <ImagePlus className="w-5 h-5" />
               </label>
+
+              {/* Live Camera Snap */}
+              <button
+                type="button"
+                onClick={() => setCameraModalOpen(true)}
+                className="shrink-0 p-3 rounded-2xl bg-slate-900 border border-slate-800 text-slate-400 hover:text-emerald-400 hover:border-emerald-500/40 cursor-pointer transition-all"
+                title={t('takeLivePhotoChat')}
+              >
+                <Camera className="w-5 h-5" />
+              </button>
+
+              {/* Live Camera Modal */}
+              <CameraModal
+                isOpen={cameraModalOpen}
+                onClose={() => setCameraModalOpen(false)}
+                onCapture={handleCameraCapture}
+              />
 
               {/* Voice Input */}
               <button
@@ -621,14 +647,10 @@ export const ChatBot = () => {
                 }}
                 placeholder={
                   isListening
-                    ? '🎤 Listening... (speak now)'
+                    ? t('voiceListening')
                     : imagePreview
-                    ? '📷 Describe what you see or ask about this image...'
-                    : lang === 'hi'
-                    ? 'अपना कृषि प्रश्न यहां टाइप करें... (Enter भेजें)'
-                    : lang === 'mr'
-                    ? 'आपला शेती प्रश्न येथे टाइप करा... (Enter पाठवा)'
-                    : 'Type your farming question here... (Enter to send, Shift+Enter for new line)'
+                    ? t('uploadCropPhoto')
+                    : t('chatPlaceholder')
                 }
                 rows={1}
                 className="flex-1 bg-slate-900 border border-slate-800 rounded-2xl px-4 py-3 text-sm text-slate-100 placeholder-slate-500 outline-none focus:border-amber-500 resize-none transition-all max-h-28 overflow-y-auto"
@@ -673,10 +695,10 @@ export const ChatBot = () => {
             {[
               { icon: Leaf, label: 'Soil & Crop Advice', color: 'text-emerald-400', desc: 'NPK, pH, organic carbon' },
               { icon: ShieldCheck, label: 'Govt Scheme Guide', color: 'text-cyan-400', desc: 'PM-KISAN, PMFBY, subsidies' },
-              { icon: Bug, label: 'Pest Diagnosis', color: 'text-rose-400', desc: 'IPM, spray schedule' },
-              { icon: Droplets, label: 'Irrigation Planning', color: 'text-blue-400', desc: 'Water scheduling, drip tips' },
-              { icon: Sprout, label: 'Fertilizer Dosage', color: 'text-amber-400', desc: 'Per-acre recommendations' },
-              { icon: BookOpen, label: 'Farming Practices', color: 'text-purple-400', desc: 'Best practices, crop calendar' },
+              { icon: Bug, label: t('pestDiagnosisTitle'), color: 'text-rose-400', desc: 'IPM, spray schedule' },
+              { icon: Droplets, label: t('irrigationPlanningTitle'), color: 'text-blue-400', desc: 'Water scheduling, drip tips' },
+              { icon: Sprout, label: t('fertilizerDosageTitle'), color: 'text-amber-400', desc: 'Per-acre recommendations' },
+              { icon: BookOpen, label: t('farmingPracticesTitle'), color: 'text-purple-400', desc: 'Best practices, crop calendar' },
             ].map(({ icon: Icon, label, color, desc }, i) => (
               <div key={i} className="flex items-start gap-3 p-2 rounded-xl hover:bg-slate-900/60 transition-all cursor-default">
                 <Icon className={`w-5 h-5 ${color} shrink-0 mt-0.5`} />
@@ -691,31 +713,31 @@ export const ChatBot = () => {
           {/* Voice & Image Guide */}
           <div className="glass-panel rounded-3xl border border-slate-800 p-4 space-y-3">
             <h4 className="text-xs font-bold text-slate-300 uppercase tracking-wider border-b border-slate-800 pb-2">
-              Input Methods
+              {t('inputMethods')}
             </h4>
             <div className="space-y-2.5 text-[11px] text-slate-400">
               <div className="flex gap-2 items-start">
                 <Mic className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
-                <span><strong className="text-slate-300">Voice Input</strong> — Click 🎤 and speak your question in English, Hindi, or Marathi</span>
+                <span><strong className="text-slate-300">{t('voiceInputInfo')}</strong> — Click 🎤 and speak your question in English, Hindi, or Marathi</span>
               </div>
               <div className="flex gap-2 items-start">
                 <Volume2 className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
-                <span><strong className="text-slate-300">Voice Output</strong> — Hover over AI replies and click "Listen" for audio readout</span>
+                <span><strong className="text-slate-300">{t('voiceOutputInfo')}</strong> — Hover over AI replies and click "Listen" for audio readout</span>
               </div>
               <div className="flex gap-2 items-start">
                 <ImagePlus className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
-                <span><strong className="text-slate-300">Image Diagnosis</strong> — Upload crop or soil photos for AI visual analysis</span>
+                <span><strong className="text-slate-300">{t('imageDiagnosisInfo')}</strong> — Upload crop or soil photos for AI visual analysis</span>
               </div>
               <div className="flex gap-2 items-start">
                 <Globe className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
-                <span><strong className="text-slate-300">Multilingual</strong> — Switch EN / हिं / मरा for responses in your language</span>
+                <span><strong className="text-slate-300">{t('multilingualInfo')}</strong> — Switch EN / हिं / मरा for responses in your language</span>
               </div>
             </div>
           </div>
 
           {/* Emergency Contacts */}
           <div className="glass-panel rounded-3xl border border-amber-500/20 bg-amber-500/5 p-4 space-y-2">
-            <h4 className="text-xs font-bold text-amber-400 uppercase tracking-wider">Kisan Helplines</h4>
+            <h4 className="text-xs font-bold text-amber-400 uppercase tracking-wider">{t('kisanHelplines')}</h4>
             <div className="space-y-1.5 text-[11px]">
               <div className="flex justify-between text-slate-300">
                 <span className="text-slate-400">PM-KISAN Helpline:</span>

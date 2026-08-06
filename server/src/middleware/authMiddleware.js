@@ -16,7 +16,7 @@ export const protect = async (req, res, next) => {
         // Fallback for mock environment if DB is offline
         req.user = {
           _id: decoded.id,
-          fullName: decoded.role === 'admin' ? 'KrishiSeva Admin (Offline Mock)' : 'Safal Sharma (Offline Mock)',
+          fullName: decoded.role === 'admin' ? 'KrishiSeva Admin' : 'Safal Sharma',
           phone: decoded.role === 'admin' ? '9999999999' : '9876543210',
           role: decoded.role || 'farmer',
           state: 'Maharashtra',
