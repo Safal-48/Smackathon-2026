@@ -74,20 +74,22 @@ export const registerUser = async (req, res, next) => {
 
 export const loginUser = async (req, res, next) => {
   try {
-    const { phone, password } = req.body;
+    const credential = req.body.phone || req.body.email || req.body.identifier;
+    const { password } = req.body;
 
-    if (!phone || !password) {
-      return res.status(400).json({ success: false, message: 'Please enter phone number and password' });
+    if (!credential || !password) {
+      return res.status(400).json({ success: false, message: 'Please enter phone number or email and password' });
     }
 
     const isDbConnected = mongoose.connection.readyState === 1;
 
     if (!isDbConnected) {
-      const role = (phone === '9999999999' || password === 'admin123') ? 'admin' : 'farmer';
+      const role = (credential === '9999999999' || credential === 'admin@krishiseva.com' || password === 'admin123') ? 'admin' : 'farmer';
       const mockUser = {
-        _id: 'user_' + (phone || 'demo'),
+        _id: 'user_' + (credential || 'demo'),
         fullName: role === 'admin' ? 'KrishiSeva Admin' : 'Safal Sharma',
-        phone: phone || '9876543210',
+        phone: credential.includes('@') ? '9876543210' : credential,
+        email: credential.includes('@') ? credential : 'farmer@krishiseva.com',
         role: role,
         state: 'Maharashtra',
         district: 'Nagpur',
@@ -98,9 +100,12 @@ export const loginUser = async (req, res, next) => {
       return res.json({ success: true, token, user: mockUser });
     }
 
-    const user = await User.findOne({ phone });
+    const user = await User.findOne({
+      $or: [{ phone: credential }, { email: credential.toLowerCase() }]
+    });
+
     if (!user || !(await user.matchPassword(password))) {
-      return res.status(401).json({ success: false, message: 'Invalid phone number or password' });
+      return res.status(401).json({ success: false, message: 'Invalid credentials. Please check your phone/email and password.' });
     }
 
     const token = generateToken(user._id, user.role);
@@ -112,6 +117,7 @@ export const loginUser = async (req, res, next) => {
         _id: user._id,
         fullName: user.fullName,
         phone: user.phone,
+        email: user.email,
         role: user.role,
         state: user.state,
         district: user.district,

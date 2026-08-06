@@ -25,7 +25,7 @@ export const Login = () => {
     setError('');
 
     if (!phone.trim() || !password) {
-      setError('Please enter your phone number and password.');
+      setError('Please enter your phone number or email and password.');
       return;
     }
 
@@ -79,18 +79,18 @@ export const Login = () => {
           <form onSubmit={handleSubmit} className="space-y-4" noValidate>
             <div>
               <label htmlFor="login-phone" className="text-xs font-semibold text-slate-300 block mb-1">
-                Phone Number
+                Phone Number / Email Address
               </label>
               <div className="relative">
                 <Phone className="w-4 h-4 text-slate-500 absolute left-3.5 top-3.5" aria-hidden="true" />
                 <input
                   id="login-phone"
-                  type="tel"
+                  type="text"
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
                   required
-                  autoComplete="tel"
-                  placeholder="10-digit mobile number"
+                  autoComplete="username"
+                  placeholder="Mobile number or email (e.g. 9876543210)"
                   className="w-full bg-slate-900 border border-slate-800 rounded-xl pl-10 pr-4 py-2.5 text-sm text-slate-100 outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/30 transition-all"
                 />
               </div>
@@ -119,7 +119,7 @@ export const Login = () => {
                 <button
                   type="button"
                   onClick={() => setShowPass(!showPass)}
-                  className="absolute right-3 top-2.5 text-slate-400 hover:text-slate-200 transition-colors"
+                  className="absolute right-3.5 top-3.5 text-slate-500 hover:text-slate-300 transition-colors"
                   aria-label={showPass ? 'Hide password' : 'Show password'}
                 >
                   {showPass ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
@@ -130,26 +130,24 @@ export const Login = () => {
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3 rounded-xl bg-gradient-to-r from-emerald-500 to-green-500 hover:from-emerald-400 hover:to-green-400 disabled:opacity-50 disabled:cursor-not-allowed text-slate-950 font-bold text-sm shadow-lg shadow-emerald-950/50 flex items-center justify-center gap-2 transition-all"
-              aria-busy={loading}
+              className="w-full bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold py-3 rounded-xl transition-all shadow-lg shadow-emerald-500/20 flex items-center justify-center gap-2 text-sm disabled:opacity-50"
             >
               {loading ? (
-                <>
-                  <div className="w-4 h-4 border-2 border-slate-950/30 border-t-slate-950 rounded-full animate-spin" />
-                  Authenticating…
-                </>
+                <div className="w-5 h-5 border-2 border-slate-950 border-t-transparent rounded-full animate-spin" />
               ) : (
                 <>
-                  <LogIn className="w-4 h-4" aria-hidden="true" />
-                  {t('login')}
+                  <LogIn className="w-4 h-4 stroke-[2.5]" />
+                  <span>{t('login')}</span>
                 </>
               )}
             </button>
           </form>
 
-          {/* Demo credentials hint */}
-          <div className="p-3 rounded-xl bg-amber-500/5 border border-amber-500/20 text-xs text-amber-300 text-center">
-            <span className="font-bold">Demo:</span> Phone: 9876543210 / Password: farmer123
+          {/* Quick Demo Credentials */}
+          <div className="p-3 rounded-xl bg-slate-900/80 border border-slate-800 text-center space-y-1">
+            <p className="text-[11px] font-semibold text-emerald-400">⚡ Demo Credentials:</p>
+            <p className="text-[11px] text-slate-300">Phone/Email: <code className="text-amber-300 font-mono">9876543210</code> or <code className="text-amber-300 font-mono">farmer@krishiseva.com</code></p>
+            <p className="text-[11px] text-slate-300">Password: <code className="text-amber-300 font-mono">farmer123</code></p>
           </div>
 
           <div className="text-center pt-2 border-t border-slate-800 text-xs text-slate-400">
