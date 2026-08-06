@@ -2,15 +2,72 @@
 <html lang="en" class="dark">
   <head>
     <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+    <!-- ─── Primary SEO ────────────────────────────────────────────────────── -->
+    <title>KrishiSeva AI — Smart Farming Assistant & Government Scheme Guide</title>
+    <meta name="description" content="KrishiSeva AI is India's premium AI-powered smart farming assistant. Get soil analysis, crop recommendations, government scheme guidance (PM-KISAN, PMFBY, PMKSY), and expert agricultural advice in English, Hindi and Marathi." />
+    <meta name="keywords" content="smart farming, AI agriculture, PM-KISAN, soil analysis, crop recommendation, government schemes, PMFBY, drip irrigation subsidy, farmer assistant, KrishiSeva" />
+    <meta name="author" content="KrishiSeva AI — YCCE Hackathon 2026" />
+    <meta name="robots" content="index, follow" />
+    <meta name="theme-color" content="#0f172a" />
+
+    <!-- ─── Open Graph (Social Sharing) ──────────────────────────────────────── -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="KrishiSeva AI — Smart Farming Assistant" />
+    <meta property="og:description" content="AI-powered soil analysis, crop recommendations, and multilingual government scheme guidance for Indian farmers." />
+    <meta property="og:url" content="https://krishiseva.ai" />
+    <meta property="og:image" content="/og-image.png" />
+    <meta property="og:locale" content="en_IN" />
+    <meta property="og:locale:alternate" content="hi_IN" />
+    <meta property="og:locale:alternate" content="mr_IN" />
+
+    <!-- ─── Twitter Card ──────────────────────────────────────────────────────── -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="KrishiSeva AI — Smart Farming Assistant" />
+    <meta name="twitter:description" content="AI-powered soil analysis and government scheme guidance for Indian farmers." />
+    <meta name="twitter:image" content="/og-image.png" />
+
+    <!-- ─── Favicon ───────────────────────────────────────────────────────────── -->
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>KrishiSeva AI — 3D Smart Farming Assistant & Scheme Guidance</title>
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Outfit:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+
+    <!-- ─── Performance: DNS Prefetch ─────────────────────────────────────────── -->
+    <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
+    <link rel="dns-prefetch" href="https://fonts.gstatic.com" />
+
+    <!-- ─── Google Fonts (preconnect + display=swap for CLS reduction) ─────────── -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Outfit:wght@400;600;700;800;900&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- ─── Structured Data (Schema.org) ──────────────────────────────────────── -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "KrishiSeva AI",
+      "description": "AI-powered Smart Farming Assistant for Indian farmers with soil analysis, crop recommendations and government scheme guidance.",
+      "url": "https://krishiseva.ai",
+      "applicationCategory": "Agriculture",
+      "operatingSystem": "Web Browser",
+      "inLanguage": ["en", "hi", "mr"],
+      "offers": { "@type": "Offer", "price": "0", "priceCurrency": "INR" }
+    }
+    </script>
   </head>
   <body class="bg-slate-950 text-slate-100 overflow-x-hidden antialiased">
+    <!-- Skip to main content link for keyboard/screen-reader users -->
+    <a
+      href="#main-content"
+      class="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[9999] focus:px-4 focus:py-2 focus:bg-emerald-500 focus:text-slate-950 focus:font-bold focus:rounded-lg focus:shadow-lg"
+    >
+      Skip to main content
+    </a>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
   </body>

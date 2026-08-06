@@ -1,20 +1,47 @@
 @import "tailwindcss";
 
+/* ─── Base Layer ──────────────────────────────────────────────────────────── */
 @layer base {
+  html {
+    scroll-behavior: smooth;
+    -webkit-tap-highlight-color: transparent;
+  }
+
   body {
-    font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     background-color: #0f172a;
     color: #f8fafc;
     min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
   }
+
+  /* Focus rings — accessible keyboard navigation */
+  *:focus-visible {
+    outline: 2px solid #22c55e;
+    outline-offset: 2px;
+    border-radius: 6px;
+  }
+
+  /* Remove default tap highlight on mobile */
+  button, a, [role="button"] {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* Smooth scrollbar */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: #0f172a; }
+  ::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: #475569; }
 }
 
-/* Glassmorphism & Custom Accents */
+/* ─── Glassmorphism ─────────────────────────────────────────────────────────── */
 .glass-panel {
-  background: rgba(30, 41, 59, 0.7);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(30, 41, 59, 0.72);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.07);
 }
 
 .glass-panel-hover {
@@ -22,19 +49,35 @@
 }
 
 .glass-panel-hover:hover {
-  background: rgba(30, 41, 59, 0.85);
-  border-color: rgba(34, 197, 94, 0.3);
+  background: rgba(30, 41, 59, 0.88);
+  border-color: rgba(34, 197, 94, 0.28);
   transform: translateY(-2px);
-  box-shadow: 0 12px 30px -10px rgba(34, 197, 94, 0.15);
+  box-shadow: 0 16px 40px -12px rgba(34, 197, 94, 0.14);
 }
 
-/* Green Gradient Accents */
+/* ─── Text Gradients ─────────────────────────────────────────────────────────── */
 .text-gradient-green {
   background: linear-gradient(135deg, #4ade80 0%, #22c55e 50%, #16a34a 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
+.text-gradient-cyan {
+  background: linear-gradient(135deg, #67e8f9 0%, #22d3ee 50%, #06b6d4 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.text-gradient-amber {
+  background: linear-gradient(135deg, #fde68a 0%, #fbbf24 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ─── Background Gradients ───────────────────────────────────────────────────── */
 .bg-gradient-agri {
   background: linear-gradient(135deg, #15803d 0%, #166534 50%, #14532d 100%);
 }
@@ -43,12 +86,59 @@
   background: linear-gradient(135deg, #059669 0%, #10b981 100%);
 }
 
-/* Micro Animations */
+/* ─── Micro Animations ────────────────────────────────────────────────────────── */
 @keyframes pulseGlow {
   0%, 100% { opacity: 0.4; }
-  50% { opacity: 0.8; }
+  50% { opacity: 0.85; }
 }
 
-.animate-pulse-glow {
-  animation: pulseGlow 3s ease-in-out infinite;
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.animate-pulse-glow { animation: pulseGlow 3s ease-in-out infinite; }
+.animate-fade-in { animation: fadeIn 0.4s ease-out both; }
+
+/* ─── Skeleton Loader ─────────────────────────────────────────────────────────── */
+.skeleton {
+  background: linear-gradient(90deg, #1e293b 25%, #334155 50%, #1e293b 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: 8px;
+}
+
+/* ─── Mobile-first Touch Targets ──────────────────────────────────────────────── */
+@media (max-width: 640px) {
+  button, [role="button"] {
+    min-height: 44px;  /* WCAG 2.5.5 touch target size */
+  }
+
+  input, select, textarea {
+    font-size: 16px !important; /* Prevent iOS auto-zoom on focus */
+  }
+}
+
+/* ─── Print Styles ───────────────────────────────────────────────────────────── */
+@media print {
+  .glass-panel {
+    background: white;
+    border: 1px solid #ccc;
+    backdrop-filter: none;
+  }
+  nav, footer, .CustomCursor { display: none !important; }
+}
+
+/* ─── Reduced Motion ─────────────────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *, ::before, ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }
