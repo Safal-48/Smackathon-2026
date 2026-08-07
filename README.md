@@ -6,29 +6,31 @@
 ![React](https://img.shields.io/badge/React-18-61DAFB?style=for-the-badge&logo=react)
 ![Node.js](https://img.shields.io/badge/Node.js-Express-339933?style=for-the-badge&logo=nodedotjs)
 ![MongoDB](https://img.shields.io/badge/MongoDB-Atlas-47A248?style=for-the-badge&logo=mongodb)
-![Vercel](https://img.shields.io/badge/Frontend-Vercel-000000?style=for-the-badge&logo=vercel)
-![Render](https://img.shields.io/badge/Backend-Render-46E3B7?style=for-the-badge&logo=render)
+![Vercel](https://img.shields.io/badge/Production-Vercel%20Monorepo-000000?style=for-the-badge&logo=vercel)
 
 **An AI-powered Smart Farming Assistant that combines portable soil quality analysis with multilingual government scheme guidance — enabling Indian farmers to improve crop productivity while easily accessing welfare benefits.**
 
-[🚀 Live Demo](https://krishiseva.vercel.app) · [📖 API Docs](./API_DOCUMENTATION.md) · [🗺️ Installation](./INSTALLATION.md)
+[🚀 Live Production Website](https://krishiseva-ai.vercel.app) · [🤖 AI Voice Assistant](https://krishiseva-ai.vercel.app/chat) · [🗺️ Installation](./INSTALLATION.md)
 
 </div>
 
 ---
 
-## ✨ Features
+## ✨ Key Features & Modules
 
 | Module | Description |
 |---|---|
 | 🌱 **3D Landing Page** | Apple-quality UI with React Three Fiber farmland, AI drone, particle stars, glassmorphism, and custom magnetic cursor |
 | 🌐 **100% Multilingual System** | Instant language switcher for **English**, **Hindi (हिंदी)**, and **Marathi (मराठी)** covering all pages, forms, badges, dropdowns, and reminders |
+| 📍 **Smart Location Profile** | **Automatic GPS Detection** with reverse geocoding & accuracy metrics + cascading **State ➔ District ➔ Taluka ➔ Village** manual selector |
+| 🎙️ **AI Audio Scheme Explainer** | Conversational voice audio explanations for government schemes in Hindi, Marathi, and English (*"PM Kisan mein aapko saal ke ₹6,000 milte hain..."*) |
+| 🤖 **2-in-1 Typing + Voice Assistant** | Real-time speech recognition input, natural text-to-speech audio synthesis (`hi-IN`, `mr-IN`, `en-US`), and live 4-bar Audio Wave visualizer |
+| 📱 **Dual Phone & Email Auth** | Seamless login & registration using either **10-digit mobile number** or **email address** |
 | 📷 **Live Camera Diagnosis** | Built-in device camera stream integration for instant soil & crop photo uploads in Soil Analysis & AI ChatBot |
-| 🧪 **AI Soil Analysis** | Enter NPK + pH + Moisture or pair portable Bluetooth NPK sensors → get AI Health Score, crop recommendations, and custom fertilizer dosage |
+| 🧪 **AI Soil Quality Diagnostic** | Enter NPK + pH + Moisture or pair portable Bluetooth NPK sensors → get AI Health Score, crop recommendations, and custom fertilizer dosage |
 | 🏛️ **21 Government Schemes** | Comprehensive catalog (PM-KISAN, PMFBY, PMKSY, PM-KUSUM, Soil Health Card, SMAM, PMMSY, RKVY, KCC, etc.) with 6-parameter smart filters & bookmarks |
 | 🌦️ **3-Day Weather Telemetry** | Interactive single-banner today's weather with modal popup for 3-day forecast, humidity, wind, and solar radiance metrics |
 | 📊 **Smart Dashboard** | Live crop health monitoring, NPK trend charts, yield gain analysis, localized farming reminders, and recent soil diagnostic logs |
-| 🤖 **AI ChatBot Assistant** | Voice speech-to-text input, TTS audio playback, image diagnosis, multilingual context switching, powered by Gemini 1.5 Flash |
 | 🔔 **Notifications & Alerts** | Real-time per-user notifications with automatic 30-day TTL cleanup |
 | 💬 **Feedback System** | Star rating, category tagging, and admin response workflow |
 | 👑 **Admin Console** | Analytics overview, user management, broadcast alert system, and full scheme CRUD management |
@@ -51,7 +53,7 @@
 | React Router | 6 | SPA routing |
 | Lucide React | 0.400 | Icon system |
 
-### Backend
+### Backend & Serverless API
 | Technology | Version | Purpose |
 |---|---|---|
 | Node.js | 20 LTS | Runtime |
@@ -60,10 +62,8 @@
 | Mongoose | 8.5 | ODM / schema validation |
 | JWT | 9.0 | Stateless authentication |
 | bcryptjs | 2.4 | Password hashing |
-| Helmet | 8.3 | HTTP security headers |
-| express-mongo-sanitize | 2.2 | NoSQL injection prevention |
-| express-rate-limit | 7.3 | API abuse protection |
 | Google Gemini Flash | 0.21 | AI language model |
+| Vercel Serverless | - | Single-domain API functions |
 
 ---
 
@@ -71,46 +71,45 @@
 
 ```
 YCCE Hackathon/
+├── api/                       # Vercel Serverless Entrypoint
+│   └── index.js
 ├── client/                    # React + Vite Frontend
 │   ├── public/
-│   │   └── favicon.svg
 │   ├── src/
 │   │   ├── components/
 │   │   │   ├── 3d/
 │   │   │   │   └── FarmlandScene.jsx    # Three.js 3D world
-│   │   │   └── common/
-│   │   │       ├── Navbar.jsx
-│   │   │       ├── Footer.jsx
-│   │   │       ├── Card3D.jsx           # Mouse-tilt 3D cards
-│   │   │       ├── CustomCursor.jsx     # Magnetic cursor
-│   │   │       ├── LoadingScreen.jsx    # Animated splash
-│   │   │       ├── MagneticButton.jsx
-│   │   │       └── ErrorBoundary.jsx
+│   │   │   ├── common/
+│   │   │   │   ├── Navbar.jsx
+│   │   │   │   ├── Footer.jsx
+│   │   │   │   ├── Card3D.jsx
+│   │   │   │   └── CustomCursor.jsx
+│   │   │   └── farmer/
+│   │   │       └── FarmerLocationModal.jsx # Location module
 │   │   ├── context/
-│   │   │   ├── AuthContext.jsx          # JWT auth state
+│   │   │   ├── AuthContext.jsx          # JWT & session state
 │   │   │   ├── LanguageContext.jsx      # EN/HI/MR i18n
-│   │   │   └── ToastContext.jsx         # Global notifications
+│   │   │   ├── LocationContext.jsx      # GPS & Indian locations
+│   │   │   └── ToastContext.jsx
 │   │   ├── pages/
 │   │   │   ├── auth/
-│   │   │   │   ├── Login.jsx
+│   │   │   │   ├── Login.jsx            # Dual Phone/Email login
 │   │   │   │   ├── Register.jsx
 │   │   │   │   └── ForgotPassword.jsx
 │   │   │   ├── farmer/
 │   │   │   │   ├── Home.jsx             # Dashboard
-│   │   │   │   ├── SoilAnalysis.jsx     # Soil module
-│   │   │   │   ├── Schemes.jsx          # Scheme finder
-│   │   │   │   ├── ChatBot.jsx          # AI assistant
+│   │   │   │   ├── SoilAnalysis.jsx     # Soil diagnostic
+│   │   │   │   ├── Schemes.jsx          # Schemes & Audio Explainer
+│   │   │   │   ├── ChatBot.jsx          # 2-in-1 Voice + Text AI
 │   │   │   │   └── Profile.jsx
 │   │   │   ├── admin/
 │   │   │   │   └── AdminDashboard.jsx
-│   │   │   └── ErrorPages.jsx           # 404 + Error fallback
+│   │   │   └── ErrorPages.jsx
 │   │   ├── services/
-│   │   │   └── api.js                   # Typed Axios helpers
+│   │   │   └── api.js                   # Typed Axios client
 │   │   ├── App.jsx
-│   │   ├── main.jsx
 │   │   └── index.css                    # Design system
-│   ├── vercel.json                      # Vercel deployment
-│   ├── vite.config.js
+│   ├── vercel.json                      # Client SPA rewrites
 │   └── package.json
 │
 ├── server/                    # Node.js + Express Backend
@@ -118,51 +117,29 @@ YCCE Hackathon/
 │   │   ├── config/
 │   │   │   └── db.js                    # MongoDB Atlas connection
 │   │   ├── controllers/
-│   │   │   ├── authController.js        # Register/Login/Profile
-│   │   │   ├── soilController.js        # Soil analysis
-│   │   │   ├── schemeController.js      # Scheme finder + AI chat
-│   │   │   ├── adminController.js       # Admin panel
-│   │   │   ├── notificationController.js
-│   │   │   └── feedbackController.js
+│   │   │   ├── authController.js        # Phone/Email login & auth
+│   │   │   ├── soilController.js        # Soil ML engine
+│   │   │   ├── schemeController.js      # Scheme finder & audio explainer
+│   │   │   └── adminController.js
 │   │   ├── middleware/
-│   │   │   ├── authMiddleware.js        # JWT protect + adminOnly
-│   │   │   └── errorMiddleware.js       # Global error handler
+│   │   │   ├── authMiddleware.js        # JWT protect
+│   │   │   └── errorMiddleware.js
 │   │   ├── models/
 │   │   │   ├── User.js
 │   │   │   ├── SoilReport.js
-│   │   │   ├── Scheme.js
-│   │   │   ├── SchemeApplication.js
-│   │   │   ├── ChatHistory.js
-│   │   │   ├── Notification.js          # 30-day TTL
-│   │   │   └── Feedback.js
-│   │   ├── routes/
-│   │   │   ├── authRoutes.js
-│   │   │   ├── soilRoutes.js
-│   │   │   ├── schemeRoutes.js
-│   │   │   ├── adminRoutes.js
-│   │   │   ├── notificationRoutes.js
-│   │   │   └── feedbackRoutes.js
-│   │   ├── services/
-│   │   │   ├── aiService.js             # Gemini AI integration
-│   │   │   └── soilMlService.js         # Soil analysis engine
-│   │   ├── app.js                       # Express setup
-│   │   └── server.js                    # Entry point
-│   ├── .env.example
+│   │   │   └── Scheme.js
+│   │   ├── app.js
+│   │   └── server.js
 │   └── package.json
 │
-├── render.yaml                # Render deployment config
-├── .gitignore
-└── README.md
+├── vercel.json                # Single-link Vercel monorepo configuration
+├── README.md
+└── INSTALLATION.md
 ```
 
 ---
 
 ## 🚀 Quick Start (Local Development)
-
-### Prerequisites
-- Node.js 18+ and npm
-- MongoDB Atlas account (free tier)
-- Google Gemini API key (optional — offline fallback available)
 
 ### 1. Clone & Install
 
@@ -179,12 +156,12 @@ cd ../client && npm install
 
 ### 2. Configure Environment
 
+In `server/`:
 ```bash
-# In the server/ directory, create .env
 cp .env.example .env
 ```
 
-Edit `server/.env`:
+Set environment variables in `server/.env`:
 ```env
 PORT=5000
 NODE_ENV=development
@@ -194,71 +171,40 @@ GEMINI_API_KEY=your_gemini_api_key_here
 CLIENT_URL=http://localhost:3000
 ```
 
-### 3. Run the Application
+### 3. Run Locally
 
-**Terminal 1 — Backend:**
+**Backend Server:**
 ```bash
 cd server
 npm start
-# Server starts on http://localhost:5000
+# http://localhost:5000
 ```
 
-**Terminal 2 — Frontend:**
+**Frontend Client:**
 ```bash
 cd client
 npm run dev
-# Opens http://127.0.0.1:3000
+# http://127.0.0.1:3000
 ```
 
-### 4. Demo Login
-| Role | Phone | Password |
+### 4. Credentials
+| Account | Phone / Email | Password |
 |---|---|---|
-| Farmer | `9876543210` | `farmer123` |
-| Admin | `9999999999` | `admin123` |
+| Farmer Demo | `9876543210` / `farmer@krishiseva.com` | `farmer123` |
+| Admin Demo | `9999999999` / `admin@krishiseva.com` | `admin123` |
 
 ---
 
-## 🌐 Deployment
+## 🌐 Production Deployment (Vercel Single-Link)
 
-### Frontend → Vercel
+The entire fullstack project is configured for **Single-Link Vercel Deployment**:
 
-1. Go to [vercel.com](https://vercel.com) and import the GitHub repository
-2. Set **Root Directory** to `client`
-3. Add environment variable: `VITE_API_URL=https://your-render-app.onrender.com`
-4. Deploy — Vercel auto-detects Vite
+```bash
+npx vercel --prod
+```
 
-### Backend → Render
-
-1. Go to [render.com](https://render.com) and create a **New Web Service**
-2. Connect the GitHub repository
-3. Set **Root Directory** to `server`
-4. **Build Command:** `npm install`
-5. **Start Command:** `node src/server.js`
-6. Add environment variables in the Render dashboard:
-   - `MONGODB_URI`
-   - `JWT_SECRET`
-   - `GEMINI_API_KEY`
-   - `CLIENT_URL` (your Vercel URL)
-7. Deploy
-
-### Database → MongoDB Atlas
-
-1. Create a free cluster at [cloud.mongodb.com](https://cloud.mongodb.com)
-2. Create a database user with read/write access
-3. Whitelist `0.0.0.0/0` (for Render's dynamic IPs)
-4. Copy the connection string into `MONGODB_URI`
-
----
-
-## 🔑 Key Environment Variables
-
-| Variable | Where | Description |
-|---|---|---|
-| `MONGODB_URI` | Server | MongoDB Atlas connection string |
-| `JWT_SECRET` | Server | JWT signing secret (min 32 chars) |
-| `GEMINI_API_KEY` | Server | Google AI Studio API key |
-| `CLIENT_URL` | Server | Frontend URL for CORS whitelist |
-| `VITE_API_URL` | Client (Vercel) | Backend Render URL |
+- **Live URL**: **[https://krishiseva-ai.vercel.app](https://krishiseva-ai.vercel.app)**
+- **Rewrites**: All `/api/*` endpoints route to serverless `api/index.js` and client routes (`/chat`, `/schemes`, `/soil-analysis`) map to `client/dist/index.html`.
 
 ---
 

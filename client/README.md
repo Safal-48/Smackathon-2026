@@ -1,16 +1,34 @@
-# React + Vite
+# 🌾 KrishiSeva AI — Frontend Application (Vite + React 18)
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+This directory contains the client-side React 18 application for **KrishiSeva AI** built with Vite, Tailwind CSS, Framer Motion, and Three.js.
 
-Currently, two official plugins are available:
+## 🚀 Key Modules
+- **3D Interactive Hero**: React Three Fiber 3D farmland world with AI drone and parallax effects.
+- **Multilingual Support**: Real-time i18n support for English, Hindi (हिंदी), and Marathi (मराठी).
+- **Smart Farmer Location Profile**: Automatic GPS location detection with reverse geocoding + cascading State/District/Taluka/Village selectors.
+- **2-in-1 Voice + Text AI ChatBot**: Gemini Flash AI integration with Web Speech API text-to-speech & speech-to-text.
+- **AI Audio Scheme Explainer**: Conversational voice audio explanations for government schemes in EN, HI, and MR.
+- **AI Soil Quality Diagnostics**: Real-time NPK fertility score, crop recommendation cards, and custom fertilizer dosage.
+- **Live Camera Capture**: Real-time device camera stream for uploading soil and crop photos.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## 🛠️ Tech Stack
+- **React 18**
+- **Vite 5**
+- **Tailwind CSS 4**
+- **Three.js & React Three Fiber**
+- **Framer Motion 13**
+- **Axios 1.7**
+- **Lucide React 0.400**
 
-## React Compiler
+## 💻 Development Commands
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+```bash
+# Install dependencies
+npm install
 
-## Expanding the Oxlint configuration
+# Start local development server
+npm run dev
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and Oxlint's TypeScript related rules in your project.
+# Build production bundle
+npm run build
+```
