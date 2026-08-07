@@ -34,6 +34,7 @@ import { CameraModal } from '../../components/common/CameraModal';
 // ─── AI Topic Suggestion Chips ───────────────────────────────────────────────
 const TOPIC_SUGGESTIONS = {
   en: [
+    { icon: '🤖', label: 'About Me', query: 'Tell me about yourself and how you can help me.' },
     { icon: '💰', label: 'PM-KISAN ₹6,000', query: 'How do I get PM-KISAN ₹6,000 yearly income support? What documents are needed?' },
     { icon: '🌾', label: 'Crop Insurance', query: 'Explain PM Fasal Bima Yojana crop insurance scheme and how to file a claim.' },
     { icon: '☀️', label: 'Solar Pump', query: 'How to get PM-KUSUM solar pump subsidy of 60% for my farm?' },
@@ -46,6 +47,7 @@ const TOPIC_SUGGESTIONS = {
     { icon: '🔬', label: 'Soil Test Tool', query: 'How does KrishiMitra portable soil testing tool work on this website?' },
   ],
   hi: [
+    { icon: '🤖', label: 'अपने बारे में बताएं', query: 'अपने बारे में बताएं और आप मेरी क्या सहायता कर सकते हैं?' },
     { icon: '💰', label: 'PM-KISAN ₹6,000', query: 'पीएम-किसान ₹6,000 के लिए कौन से दस्तावेज चाहिए और कैसे आवेदन करें?' },
     { icon: '🌾', label: 'फसल बीमा', query: 'प्रधानमंत्री फसल बीमा योजना में कैसे दावा करें?' },
     { icon: '☀️', label: 'सोलर पंप', query: 'PM-KUSUM सोलर पंप योजना में 60% सब्सिडी कैसे मिलती है?' },
@@ -55,6 +57,7 @@ const TOPIC_SUGGESTIONS = {
     { icon: '📞', label: 'वेबसाइट संपर्क', query: 'कृषिसेवा टीम से ईमेल या फोन पर संपर्क कैसे करें?' },
   ],
   mr: [
+    { icon: '🤖', label: 'तुमच्याबद्दल सांगा', query: 'तुमच्याबद्दल सांगा आणि तुम्ही काय मदत करू शकता?' },
     { icon: '💰', label: 'PM-KISAN ₹6,000', query: 'PM-KISAN ₹6,000 साठी कोणते कागदपत्रे लागतात आणि अर्ज कसा करावा?' },
     { icon: '🌾', label: 'पीक विमा', query: 'PM फसल बीमा योजनेत दावा कसा नोंदवावा?' },
     { icon: '☀️', label: 'सौर पंप', query: 'PM-KUSUM सौर पंप योजनेत ६०% अनुदान कसे मिळवावे?' },
@@ -249,6 +252,11 @@ export const ChatBot = () => {
     { id: 'chat_1', title: 'Current Session', count: 1 },
   ]);
 
+  const [availableVoices, setAvailableVoices] = useState([]);
+  const interimTextRef = useRef('');
+  const silenceTimerRef = useRef(null);
+  const autoSubmittedRef = useRef(false);
+
   const messagesEndRef = useRef(null);
   const fileInputRef = useRef(null);
   const recognitionRef = useRef(null);
@@ -262,6 +270,17 @@ export const ChatBot = () => {
     scrollToBottom();
   }, [messages, loading]);
 
+  // Load browser speech synthesis voices
+  useEffect(() => {
+    if (!('speechSynthesis' in window)) return;
+    const loadVoices = () => {
+      const v = window.speechSynthesis.getVoices() || [];
+      setAvailableVoices(v);
+    };
+    loadVoices();
+    window.speechSynthesis.onvoiceschanged = loadVoices;
+  }, []);
+
   // Update welcome message on language change
   useEffect(() => {
     setMessages((prev) => {
@@ -272,7 +291,7 @@ export const ChatBot = () => {
     });
   }, [lang]);
 
-  // ─── Voice Speech-to-Text ──────────────────────────────────────────────────
+  // ─── Voice Speech-to-Text with Direct Auto Send ─────────────────────────────
   const toggleListening = () => {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (!SpeechRecognition) {
@@ -281,37 +300,65 @@ export const ChatBot = () => {
     }
 
     if (isListening) {
-      recognitionRef.current?.stop();
+      if (recognitionRef.current) {
+        try { recognitionRef.current.stop(); } catch (e) {}
+      }
       setIsListening(false);
       return;
     }
 
+    try {
+      if (recognitionRef.current) {
+        recognitionRef.current.abort();
+      }
+    } catch (e) {}
+
     const recognition = new SpeechRecognition();
     const langCodes = { hi: 'hi-IN', mr: 'mr-IN', en: 'en-IN' };
-    recognition.lang = langCodes[lang] || 'en-IN';
+    recognition.lang = langCodes[lang] || 'hi-IN';
     recognition.continuous = false;
     recognition.interimResults = true;
 
-    recognition.onstart = () => setIsListening(true);
+    let recognizedText = '';
+
+    recognition.onstart = () => {
+      setIsListening(true);
+    };
+
     recognition.onresult = (event) => {
-      let finalTranscript = '';
-      for (let i = event.resultIndex; i < event.results.length; ++i) {
-        if (event.results[i].isFinal) {
-          finalTranscript += event.results[i][0].transcript;
-        } else {
-          setInput(event.results[i][0].transcript);
-        }
+      let liveText = '';
+      for (let i = 0; i < event.results.length; i++) {
+        liveText += event.results[i][0].transcript;
       }
-      if (finalTranscript) {
-        setInput(finalTranscript);
-        setIsListening(false);
+      recognizedText = liveText.trim();
+      if (recognizedText) {
+        setInput(recognizedText);
       }
     };
-    recognition.onerror = () => setIsListening(false);
-    recognition.onend = () => setIsListening(false);
+
+    recognition.onerror = (event) => {
+      console.warn('Speech recognition error status:', event.error);
+      if (event.error === 'not-allowed' || event.error === 'service-not-allowed') {
+        alert('Microphone access denied. Please check your browser microphone permissions.');
+      }
+      setIsListening(false);
+    };
+
+    recognition.onend = () => {
+      setIsListening(false);
+      const textToSend = recognizedText.trim() || interimTextRef.current.trim() || input.trim();
+      if (textToSend) {
+        handleSend(null, textToSend);
+      }
+    };
 
     recognitionRef.current = recognition;
-    recognition.start();
+    try {
+      recognition.start();
+    } catch (err) {
+      console.error('Speech recognition failed to start:', err);
+      setIsListening(false);
+    }
   };
 
   // ─── Text-to-Speech ────────────────────────────────────────────────────────
@@ -325,21 +372,35 @@ export const ChatBot = () => {
     }
 
     window.speechSynthesis.cancel();
-    const cleanText = text.replace(/[*#•]/g, '').replace(/\n+/g, '. ');
-    const utterance = new SpeechSynthesisUtterance(cleanText);
+
+    // Clean text for natural voice speech readout
+    const cleanText = text
+      .replace(/[*#•-]/g, ' ')
+      .replace(/https?:\/\/\S+/g, '')
+      .replace(/\S+@\S+\.\S+/g, '')
+      .replace(/\n+/g, '. ')
+      .trim();
+
+    if (!cleanText) return;
+
     const langCodes = { hi: 'hi-IN', mr: 'mr-IN', en: 'en-IN' };
-    utterance.lang = langCodes[lang] || 'en-IN';
+    const targetLangCode = langCodes[lang] || 'en-IN';
+
+    const voices = availableVoices.length ? availableVoices : window.speechSynthesis.getVoices();
+    const matchingVoice =
+      voices.find((v) => v.lang === targetLangCode) ||
+      voices.find((v) => v.lang.startsWith(targetLangCode.slice(0, 2)));
+
+    const utterance = new SpeechSynthesisUtterance(cleanText);
+    utterance.lang = targetLangCode;
     utterance.rate = 0.95;
     utterance.pitch = 1.05;
-
-    // Pick best available voice for language
-    const voices = window.speechSynthesis.getVoices();
-    const matchingVoice = voices.find((v) => v.lang === utterance.lang || v.lang.startsWith(utterance.lang.slice(0, 2)));
     if (matchingVoice) utterance.voice = matchingVoice;
 
     utterance.onstart = () => setIsSpeaking(true);
     utterance.onend = () => setIsSpeaking(false);
     utterance.onerror = () => setIsSpeaking(false);
+
     window.speechSynthesis.speak(utterance);
   };
 

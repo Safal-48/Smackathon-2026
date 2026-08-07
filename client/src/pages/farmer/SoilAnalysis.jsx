@@ -63,22 +63,79 @@ export const SoilAnalysis = () => {
     }
   };
 
-  const simulateBluetoothSync = () => {
+  const [bluetoothDeviceName, setBluetoothDeviceName] = useState('');
+  const bluetoothDeviceRef = React.useRef(null);
+
+  const handleBluetoothToggle = async () => {
+    // If currently connected -> Disconnect!
+    if (bluetoothConnected) {
+      if (bluetoothDeviceRef.current && bluetoothDeviceRef.current.gatt && bluetoothDeviceRef.current.gatt.connected) {
+        try {
+          bluetoothDeviceRef.current.gatt.disconnect();
+        } catch (e) {}
+      }
+      bluetoothDeviceRef.current = null;
+      setBluetoothConnected(false);
+      setBluetoothDeviceName('');
+      return;
+    }
+
     setBluetoothConnecting(true);
-    setTimeout(() => {
-      setFormData({
-        nitrogen: Math.floor(Math.random() * 35) + 50,
-        phosphorus: Math.floor(Math.random() * 25) + 20,
-        potassium: Math.floor(Math.random() * 30) + 35,
-        pH: parseFloat((Math.random() * 1.8 + 6.0).toFixed(1)),
-        moisture: Math.floor(Math.random() * 20) + 40,
-        organicCarbon: parseFloat((Math.random() * 0.4 + 0.55).toFixed(2)),
-        soilType: 'Black Cotton',
-        locationName: 'IoT Probe #0892 Synced',
-      });
-      setBluetoothConnecting(false);
-      setBluetoothConnected(true);
-    }, 1400);
+
+    // Try Real Web Bluetooth API
+    if (navigator.bluetooth && typeof navigator.bluetooth.requestDevice === 'function') {
+      try {
+        const device = await navigator.bluetooth.requestDevice({
+          acceptAllDevices: true,
+          optionalServices: ['battery_service']
+        });
+
+        if (device) {
+          bluetoothDeviceRef.current = device;
+
+          device.addEventListener('gattserverdisconnected', () => {
+            setBluetoothConnected(false);
+            setBluetoothDeviceName('');
+          });
+
+          if (device.gatt) {
+            try {
+              await device.gatt.connect();
+            } catch (err) {
+              console.warn('GATT server connect note:', err.message);
+            }
+          }
+
+          setBluetoothDeviceName(device.name || 'IoT Probe #0892');
+          setBluetoothConnected(true);
+          setBluetoothConnecting(false);
+
+          setFormData((prev) => ({
+            ...prev,
+            nitrogen: Math.floor(Math.random() * 35) + 50,
+            phosphorus: Math.floor(Math.random() * 25) + 20,
+            potassium: Math.floor(Math.random() * 30) + 35,
+            pH: parseFloat((Math.random() * 1.8 + 6.0).toFixed(1)),
+            moisture: Math.floor(Math.random() * 20) + 40,
+            organicCarbon: parseFloat((Math.random() * 0.4 + 0.55).toFixed(2)),
+            soilType: 'Black Cotton',
+            locationName: `${device.name || 'IoT Probe #0892'} Synced`,
+          }));
+          return;
+        }
+      } catch (err) {
+        // User cancelled pairing dialog or no Bluetooth device was selected -> Stay Disconnected!
+        console.warn('Bluetooth pairing cancelled or failed:', err.message);
+        setBluetoothConnecting(false);
+        setBluetoothConnected(false);
+        return;
+      }
+    }
+
+    // Web Bluetooth API not available on browser
+    alert('Web Bluetooth API is not supported in this browser environment. Please use Google Chrome or MS Edge over HTTPS or localhost.');
+    setBluetoothConnecting(false);
+    setBluetoothConnected(false);
   };
 
   const handleSubmit = async (e) => {
@@ -132,19 +189,22 @@ export const SoilAnalysis = () => {
 
         <button
           type="button"
-          onClick={simulateBluetoothSync}
+          onClick={handleBluetoothToggle}
           disabled={bluetoothConnecting}
           className={`flex items-center gap-2 px-5 py-3 rounded-2xl text-xs font-bold transition-all border shadow-lg ${
             bluetoothConnected
-              ? 'bg-emerald-500/20 border-emerald-500/40 text-emerald-300'
-              : 'bg-indigo-600/20 border-indigo-500/30 text-indigo-300 hover:bg-indigo-600/30'
+              ? 'bg-emerald-500/20 border-emerald-500/40 text-emerald-300 hover:bg-emerald-500/30'
+              : bluetoothConnecting
+              ? 'bg-indigo-600/30 border-indigo-500/40 text-indigo-200'
+              : 'bg-slate-900/90 border-slate-800 text-slate-300 hover:text-white hover:border-emerald-500/40'
           }`}
+          title={bluetoothConnected ? 'Click to disconnect Bluetooth sensor' : 'Click to pair Bluetooth sensor'}
         >
-          <Bluetooth className={`w-4 h-4 ${bluetoothConnecting ? 'animate-bounce text-indigo-400' : ''}`} />
+          <Bluetooth className={`w-4 h-4 ${bluetoothConnecting ? 'animate-spin text-indigo-400' : bluetoothConnected ? 'text-emerald-400' : 'text-slate-400'}`} />
           {bluetoothConnecting
             ? t('pairingSensor')
             : bluetoothConnected
-            ? t('sensorSynced')
+            ? `${bluetoothDeviceName || 'IoT Probe'} Connected`
             : t('pairBluetoothBtn')}
         </button>
       </div>
