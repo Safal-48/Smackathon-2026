@@ -28,16 +28,16 @@ export const Navbar = () => {
   }
 
   return (
-    <nav className="sticky top-2 z-50 max-w-[98%] 2xl:max-w-7xl mx-auto mb-4">
-      <div className="glass-panel rounded-2xl border border-slate-800/80 shadow-xl shadow-slate-950/40 px-3 sm:px-5 backdrop-blur-xl bg-slate-950/80">
-        <div className="flex items-center justify-between h-16 gap-3">
+    <nav className="sticky top-4 z-50 max-w-[98%] 2xl:max-w-7xl mx-auto mt-3 sm:mt-4 mb-6 px-2 sm:px-4">
+      <div className="glass-panel rounded-2xl border border-slate-800/80 shadow-2xl shadow-slate-950/60 px-3 sm:px-5 backdrop-blur-xl bg-slate-950/90">
+        <div className="flex items-center justify-between h-16 sm:h-18 gap-3">
           
           {/* Logo */}
-          <RouterLink to="/" className="flex items-center gap-2 shrink-0 group">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-emerald-500 to-green-400 flex items-center justify-center shadow-lg shadow-emerald-950/40 group-hover:scale-105 transition-transform">
+          <RouterLink to="/" className="flex items-center gap-2.5 shrink-0 group py-1">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-500 to-green-400 flex items-center justify-center shadow-lg shadow-emerald-950/40 group-hover:scale-105 transition-transform shrink-0">
               <Sprout className="w-5 h-5 text-slate-950 stroke-[2.5]" />
             </div>
-            <div>
+            <div className="flex flex-col justify-center leading-tight">
               <span className="text-base sm:text-lg font-black text-gradient-green tracking-tight whitespace-nowrap block">KrishiSeva AI</span>
               <span className="hidden 2xl:block text-[9px] text-slate-400 font-medium tracking-wider uppercase whitespace-nowrap">Smart Farming & Schemes</span>
             </div>
