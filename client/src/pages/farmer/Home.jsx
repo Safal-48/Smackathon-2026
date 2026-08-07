@@ -42,6 +42,7 @@ import {
 } from 'recharts';
 import { useAuth } from '../../context/AuthContext';
 import { useLanguage } from '../../context/LanguageContext';
+import { useLocationProfile } from '../../context/LocationContext';
 import { FarmlandScene } from '../../components/3d/FarmlandScene';
 import { Card3D } from '../../components/common/Card3D';
 import { MagneticButton } from '../../components/common/MagneticButton';
