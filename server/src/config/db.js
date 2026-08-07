@@ -1,12 +1,24 @@
 import mongoose from 'mongoose';
+import { seedInitialData } from './seed.js';
 
 export const connectDB = async () => {
   try {
-    const conn = await mongoose.connect(process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/smart-farming-assistant');
-    console.log(`MongoDB Connected: ${conn.connection.host}`);
+    const mongoUri = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/smart-farming-assistant';
+    const conn = await mongoose.connect(mongoUri, { serverSelectionTimeoutMS: 2500 });
+    console.log(`✅ MongoDB Connected Successfully: ${conn.connection.host} [Database: ${conn.connection.name}]`);
+    await seedInitialData();
   } catch (error) {
-    console.error(`MongoDB Connection Error: ${error.message}`);
-    // If local MongoDB is not running, log warning and allow fallback mode
-    console.warn('Running server without active DB connection or using in-memory mock if needed.');
+    console.log(`ℹ️ External/Local MongoDB offline (${error.message}). Auto-starting Zero-Config MongoDB Engine...`);
+    try {
+      const { MongoMemoryServer } = await import('mongodb-memory-server');
+      const mongod = await MongoMemoryServer.create();
+      const uri = mongod.getUri();
+      const conn = await mongoose.connect(uri);
+      console.log(`✅ Auto-MongoDB Engine Started & Connected Successfully: ${conn.connection.host} [Database: ${conn.connection.name}]`);
+      await seedInitialData();
+    } catch (memErr) {
+      console.warn(`⚠️ In-Memory MongoDB fallback note: ${memErr.message}`);
+      console.log('🔄 Serving live API requests with built-in data handlers.');
+    }
   }
 };

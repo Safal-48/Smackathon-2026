@@ -116,6 +116,14 @@ Climate-Smart Agriculture:
 - Practice Zero Tillage for wheat to save water and fuel.
 - Sow drought-tolerant varieties (e.g., BDN 711 Soybean, Bhawani Cotton).
 - Ridge and furrow system for moisture conservation in rain-fed areas.
+
+=== KRISHIMITRA / KRISHISEVA PLATFORM & WEBSITE KNOWLEDGE ===
+- Platform Name: KrishiMitra AI (KrishiSeva AI)
+- Mission: Empowering farmers with Precision Soil Diagnostics, Multilingual AI Guidance, and Direct Welfare Schemes.
+- Portable Soil Quality Diagnostic Tool: Allows farmers to input Nitrogen (N), Phosphorus (P), Potassium (K), pH, Moisture, and Organic Carbon values or pair an IoT Bluetooth NPK sensor to get custom fertilizer dosage & crop recommendations.
+- Government Schemes Explorer: Search and filter 10+ verified state and central schemes (PM-KISAN, PMFBY, PMKSY Drip, PM-KUSUM Solar Pump, KCC loan, etc.) with step-by-step document guides.
+- Multilingual Voice & AI Advisor: Supports English, Hindi (हिंदी), and Marathi (मराठी) with text and automatic voice readout capabilities.
+- Contact & Support: Email krushimitra.work@gmail.com, Call/WhatsApp +91 7875648995 / 7875648995, Office: KrishiMitra AgTech Hub, Krishi Bhavan Road, Nagpur, Maharashtra - 440001. Kisan Helpline: 1800-180-1551 (Toll-Free).
 `;
 
 // ─── Image Analysis Knowledge Base ─────────────────────────────────────────
@@ -140,8 +148,19 @@ export const generateFarmerAIResponse = async (userPrompt, language = 'en', imag
       const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
 
       const systemContext = `
-You are "KrishiSeva AI" (कृषिसेवा AI), an expert agricultural advisor fluent in Indian farming practices and government welfare schemes.
-Respond ALWAYS in ${targetLang}. Use clear bullet points and simple language suitable for farmers.
+You are "KrishiSeva AI" (KrishiMitra AI), an expert AI assistant dedicated EXCLUSIVELY to Indian agriculture, crop cultivation, soil health, government welfare schemes, and the KrishiMitra web platform.
+
+STRICT DOMAIN BOUNDARY & OUT-OF-SCOPE GUARDRAILS:
+1. You MUST ONLY answer questions related to:
+   a) Agriculture, crops, soil health, fertilizers, pest control, irrigation, weather, farming techniques, livestock.
+   b) Government agricultural schemes, subsidies, loans, crop insurance (PM-KISAN, PMFBY, PM-KUSUM, KCC, PMKSY, Soil Health Card, etc.).
+   c) KrishiMitra / KrishiSeva platform features, soil testing tools, scheme search, contact support (krushimitra.work@gmail.com, 7875648995).
+2. IF THE USER ASKS ABOUT ANYTHING UNRELATED TO AGRICULTURE, GOVERNMENT SCHEMES, OR KRISHIMITRA WEBSITE (such as movies, actors, coding/programming, sports, general entertainment, non-agricultural politics, general history, homework, stocks, video games, etc.):
+   You MUST STRICTLY AND POLITELY DECLINE AND RESPOND IN ${targetLang}:
+   - English: "I am sorry! I am KrishiMitra AI, dedicated exclusively to agriculture, crops, government welfare schemes, and our farming platform. Please ask me any question related to farming or KrishiMitra!"
+   - Hindi: "क्षमा करें! मैं कृषिसेवा AI (KrishiMitra AI) हूँ और केवल कृषि, फसलों, मृदा स्वास्थ्य, सरकारी योजनाओं और हमारे प्लेटफॉर्म से संबंधित प्रश्नों का उत्तर दे सकता हूँ। कृपया खेती या कृषि योजनाओं से जुड़ा प्रश्न पूछें!"
+   - Marathi: "क्षमस्व! मी कृषिसेवा AI (KrishiMitra AI) असून फक्त शेती, पिके, माती आरोग्य, शासकीय योजना आणि आमच्या प्लॅटफॉर्मशी संबंधित प्रश्नांची उत्तरे देऊ शकतो. कृपया शेती किंवा शासकीय योजनांबाबत प्रश्न विचारा!"
+3. Respond ALWAYS in ${targetLang}. Use clear bullet points and simple language suitable for farmers.
 
 Knowledge Base:
 ${AGRI_KNOWLEDGE_BASE}
@@ -151,7 +170,7 @@ ${imageBase64 ? IMAGE_ANALYSIS_KB : ''}
 
       let parts = [
         {
-          text: systemContext + `\n\nFarmer's Question: "${userPrompt}"\n\nProvide a helpful, accurate, and empathetic response with specific actionable advice.`,
+          text: systemContext + `\n\nUser Question: "${userPrompt}"\n\nProvide a helpful, accurate, and empathetic response in ${targetLang}.`,
         },
       ];
 
@@ -167,7 +186,7 @@ ${imageBase64 ? IMAGE_ANALYSIS_KB : ''}
             },
           },
           {
-            text: systemContext + `\n\nFarmer uploaded a crop/soil image with this query: "${userPrompt}"\n\nAnalyze the image carefully and provide diagnosis and recommendations in ${targetLang}.`,
+            text: systemContext + `\n\nUser uploaded a crop/soil image with this query: "${userPrompt}"\n\nAnalyze the image carefully and provide diagnosis and recommendations in ${targetLang}.`,
           },
         ];
       }
@@ -193,7 +212,32 @@ export const generateSchemeAIResponse = async (userPrompt, language = 'en', sche
 function buildFallbackResponse(query, lang) {
   const q = query.toLowerCase();
 
+  // Out-of-scope non-agriculture check
+  const nonAgriKeywords = [
+    'movie', 'film', 'actor', 'actress', 'song', 'music', 'game', 'code', 'python', 'javascript',
+    'java', 'c++', 'react', 'html', 'css', 'programming', 'cricket', 'football', 'ipl', 'politics',
+    'election', 'president', 'prime minister', 'who is', 'capital of', 'math', 'algebra', 'physics',
+    'chemistry', 'bitcoin', 'crypto', 'stock market', 'nifty', 'sensex', 'gossip', 'bollywood', 'hollywood'
+  ];
+
+  const agriMatch = /(crop|soil|farm|fertilizer|pest|water|irrigation|scheme|kisan|subsid|pmkisan|pmfby|seed|yield|cotton|wheat|soybean|paddy|krishi|krushimitra|contact|email|phone|help|number|test|npk|ph|bima|baza|mandi)/i.test(q);
+
+  if (!agriMatch && nonAgriKeywords.some((kw) => q.includes(kw))) {
+    const refusal = {
+      en: `I am sorry! I am KrishiMitra AI, dedicated exclusively to agriculture, crops, government welfare schemes, and our farming platform. Please ask me any question related to farming or KrishiMitra!`,
+      hi: `क्षमा करें! मैं कृषिसेवा AI (KrishiMitra AI) हूँ और केवल कृषि, फसलों, मृदा स्वास्थ्य, सरकारी योजनाओं और हमारे प्लेटफॉर्म से संबंधित प्रश्नों का उत्तर दे सकता हूँ। कृपया खेती या कृषि योजनाओं से जुड़ा प्रश्न पूछें!`,
+      mr: `क्षमस्व! मी कृषिसेवा AI (KrishiMitra AI) असून फक्त शेती, पिके, माती आरोग्य, शासकीय योजना आणि आमच्या प्लॅटफॉर्मशी संबंधित प्रश्नांची उत्तरे देऊ शकतो. कृपया शेती किंवा शासकीय योजनांबाबत प्रश्न विचारा!`,
+    };
+    return refusal[lang] || refusal['en'];
+  }
+
   const responses = {
+    // Website & Platform Questions
+    'krushi.?mitra|krishi.?seva|website|contact|email|phone|support|number|संपर्क|ईमेल|फोन': {
+      en: `**KrishiMitra AI Platform & Contact Info:**\n\n• **Email Support:** krushimitra.work@gmail.com\n• **Phone / WhatsApp:** +91 7875648995 / 7875648995\n• **Office Address:** KrishiMitra AgTech Hub, Krishi Bhavan Road, Nagpur, Maharashtra - 440001\n• **Kisan Helpline:** 1800-180-1551 (Toll-Free)\n• **Features:** Portable Soil Testing, 10+ Welfare Schemes, AI Multilingual Voice Assistant (English, Hindi, Marathi).`,
+      hi: `**कृषिसेवा AI प्लेटफॉर्म व संपर्क विवरण:**\n\n• **ईमेल सहायता:** krushimitra.work@gmail.com\n• **फोन व व्हाट्सएप:** +91 7875648995 / 7875648995\n• **कार्यालय:** कृषिसेवा एगटेक हब, कृषि भवन रोड, नागपुर, महाराष्ट्र - 440001\n• **किसान हेल्पलाइन:** 1800-180-1551 (टोल-फ्री)\n• **मुख्य सेवाएं:** मिट्टी जांच, सरकारी योजनाएं, बहुभाषी वॉयस एआई सहायक।`,
+      mr: `**कृषिसेवा AI प्लॅटफॉर्म व संपर्क माहिती:**\n\n• **ईमेल सहाय्य:** krushimitra.work@gmail.com\n• **फोन व व्हॉट्सॲप:** +91 7875648995 / 7875648995\n• **कार्यालय:** कृषिसेवा अ‍ॅगटेक हब, कृषी भवन रोड, नागपूर, महाराष्ट्र - ४४०००१\n• **शेतकरी हेल्पलाइन:** 1800-180-1551 (टोल-फ्री)\n• **वैशिष्ट्ये:** माती तपासणी, शासकीय योजना, बहुभाषिक व्हॉइस AI सहाय्यक.`,
+    },
     // Financial Schemes
     'pm.?kisan|6000|income.?support|hap.ta|किसान|शेतकरी': {
       en: `**PM-KISAN Scheme (₹6,000/year):**\n\n• **Who gets it:** All landholder farmer families\n• **Amount:** ₹2,000 every 4 months (3 installments)\n• **Documents:** Aadhaar, Land Record (7/12), Bank Passbook\n• **Apply:** Visit your nearest CSC center or pmkisan.gov.in\n• **Status Check:** pmkisan.gov.in → "Beneficiary Status" using Aadhaar/Mobile`,
@@ -250,12 +294,12 @@ function buildFallbackResponse(query, lang) {
     }
   }
 
-  // Generic fallback
-  const generic = {
-    en: `**KrishiSeva AI Assistant is here to help! 🌾**\n\nYou can ask me about:\n• 🏛️ **Government Schemes**: PM-KISAN, PMFBY, PMKSY, PM-KUSUM, KCC\n• 🌱 **Soil Health**: NPK levels, pH correction, organic matter improvement\n• 🌾 **Crop Management**: Cotton, Wheat, Soybean, Paddy cultivation tips\n• 💧 **Irrigation**: Drip systems, water scheduling, sprinkler subsidy\n• 🐛 **Pest Control**: IPM strategies, spray calendar, disease identification\n• 🔬 **Fertilizer Advice**: Dosage guide for any crop\n\nType your farming question and I'll provide expert guidance! You can also upload a crop image for visual diagnosis.`,
-    hi: `**कृषिसेवा AI - आपका कृषि सहायक! 🌾**\n\nआप मुझसे पूछ सकते हैं:\n• 🏛️ सरकारी योजनाएं: PM-KISAN, PMFBY, सोलर पंप, ड्रिप सब्सिडी\n• 🌱 मिट्टी स्वास्थ्य: NPK, pH सुधार, जैव कार्बन\n• 🌾 फसल प्रबंधन: कपास, गेहूं, सोयाबीन, धान\n• 🐛 कीट नियंत्रण: IPM, कीटनाशक, रोग पहचान\n\nअपना कृषि प्रश्न टाइप करें!`,
-    mr: `**कृषिसेवा AI - आपला शेती सहाय्यक! 🌾**\n\nआपण मला विचारू शकता:\n• 🏛️ शासकीय योजना: PM-KISAN, PMFBY, सौर पंप, ठिबक अनुदान\n• 🌱 मृदा आरोग्य: NPK, pH सुधारणा, सेंद्रिय कार्बन\n• 🌾 पीक व्यवस्थापन: कापूस, गहू, सोयाबीन, भात\n• 🐛 कीड नियंत्रण: IPM, फवारणी वेळापत्रक\n\nआपला शेती प्रश्न टाइप करा!`,
+  // If query is non-agri or unknown
+  const refusal = {
+    en: `I am sorry! I am KrishiMitra AI, dedicated exclusively to agriculture, crops, government welfare schemes, and our farming platform. Please ask me any question related to farming or KrishiMitra!`,
+    hi: `क्षमा करें! मैं कृषिसेवा AI (KrishiMitra AI) हूँ और केवल कृषि, फसलों, मृदा स्वास्थ्य, सरकारी योजनाओं और हमारे प्लेटफॉर्म से संबंधित प्रश्नों का उत्तर दे सकता हूँ। कृपया खेती या कृषि योजनाओं से जुड़ा प्रश्न पूछें!`,
+    mr: `क्षमस्व! मी कृषिसेवा AI (KrishiMitra AI) असून फक्त शेती, पिके, माती आरोग्य, शासकीय योजना आणि आमच्या प्लॅटफॉर्मशी संबंधित प्रश्नांची उत्तरे देऊ शकतो. कृपया शेती किंवा शासकीय योजनांबाबत प्रश्न विचारा!`,
   };
 
-  return generic[lang] || generic['en'];
+  return refusal[lang] || refusal['en'];
 }

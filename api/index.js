@@ -3,7 +3,7 @@ import { connectDB } from '../server/src/config/db.js';
 import mongoose from 'mongoose';
 
 export default async function handler(req, res) {
-  if (mongoose.connection.readyState !== 1 && process.env.MONGODB_URI) {
+  if (mongoose.connection.readyState !== 1) {
     try {
       await connectDB();
     } catch (err) {

@@ -36,30 +36,32 @@ const TOPIC_SUGGESTIONS = {
   en: [
     { icon: '💰', label: 'PM-KISAN ₹6,000', query: 'How do I get PM-KISAN ₹6,000 yearly income support? What documents are needed?' },
     { icon: '🌾', label: 'Crop Insurance', query: 'Explain PM Fasal Bima Yojana crop insurance scheme and how to file a claim.' },
-    { icon: '💧', label: 'Drip Subsidy', query: 'What is the subsidy percentage for drip irrigation under PMKSY scheme?' },
     { icon: '☀️', label: 'Solar Pump', query: 'How to get PM-KUSUM solar pump subsidy of 60% for my farm?' },
+    { icon: '💧', label: 'Drip Subsidy', query: 'What is the subsidy percentage for drip irrigation under PMKSY scheme?' },
     { icon: '🧪', label: 'Soil pH Fix', query: 'My soil is acidic with pH 5.5. What should I apply to correct it?' },
     { icon: '🌱', label: 'Nitrogen Fix', query: 'My soybean leaves are turning yellow. How to fix nitrogen deficiency?' },
     { icon: '🐛', label: 'Pest Control', query: 'Cotton bollworm attacking my crop. What pesticide should I use and at what dose?' },
-    { icon: '💧', label: 'Irrigation Tips', query: 'How much water does cotton need and at what critical growth stages?' },
     { icon: '🌾', label: 'Wheat Guide', query: 'Complete fertilizer and irrigation schedule for wheat crop per acre.' },
-    { icon: '🌿', label: 'Organic Farming', query: 'How to increase organic carbon in my soil? Give me practical tips.' },
+    { icon: '📞', label: 'Website Support', query: 'How can I contact KrishiMitra team via email or phone for support?' },
+    { icon: '🔬', label: 'Soil Test Tool', query: 'How does KrishiMitra portable soil testing tool work on this website?' },
   ],
   hi: [
     { icon: '💰', label: 'PM-KISAN ₹6,000', query: 'पीएम-किसान ₹6,000 के लिए कौन से दस्तावेज चाहिए और कैसे आवेदन करें?' },
     { icon: '🌾', label: 'फसल बीमा', query: 'प्रधानमंत्री फसल बीमा योजना में कैसे दावा करें?' },
+    { icon: '☀️', label: 'सोलर पंप', query: 'PM-KUSUM सोलर पंप योजना में 60% सब्सिडी कैसे मिलती है?' },
     { icon: '🧪', label: 'मिट्टी pH', query: 'मेरी मिट्टी का pH 5.5 है। इसे सुधारने के लिए क्या करें?' },
     { icon: '🌱', label: 'नाइट्रोजन कमी', query: 'सोयाबीन की पत्तियां पीली हो रही हैं। नाइट्रोजन कमी का उपाय बताएं।' },
-    { icon: '☀️', label: 'सोलर पंप', query: 'PM-KUSUM सोलर पंप योजना में 60% सब्सिडी कैसे मिलती है?' },
     { icon: '🐛', label: 'कपास कीट', query: 'कपास में गुलाबी बोलवर्म का नियंत्रण कैसे करें?' },
+    { icon: '📞', label: 'वेबसाइट संपर्क', query: 'कृषिसेवा टीम से ईमेल या फोन पर संपर्क कैसे करें?' },
   ],
   mr: [
     { icon: '💰', label: 'PM-KISAN ₹6,000', query: 'PM-KISAN ₹6,000 साठी कोणते कागदपत्रे लागतात आणि अर्ज कसा करावा?' },
     { icon: '🌾', label: 'पीक विमा', query: 'PM फसल बीमा योजनेत दावा कसा नोंदवावा?' },
-    { icon: '🧪', label: 'माती pH', query: 'माझ्या मातीचा pH ५.५ आहे. सुधारण्यासाठी काय करावे?' },
     { icon: '☀️', label: 'सौर पंप', query: 'PM-KUSUM सौर पंप योजनेत ६०% अनुदान कसे मिळवावे?' },
+    { icon: '🧪', label: 'माती pH', query: 'माझ्या मातीचा pH ५.५ आहे. सुधारण्यासाठी काय करावे?' },
     { icon: '💧', label: 'ठिबक अनुदान', query: 'PMKSY ठिबक सिंचन योजनेत किती टक्के अनुदान मिळते?' },
     { icon: '🐛', label: 'कापूस कीड', query: 'कापसावर गुलाबी बोंड अळीचे नियंत्रण कसे करावे?' },
+    { icon: '📞', label: 'वेबसाईट संपर्क', query: 'कृषिसेवा टीमशी ईमेल किंवा फोनवर संपर्क कसा साधावा?' },
   ],
 };
 
@@ -69,14 +71,14 @@ const PERSONA = {
   nameHindi: 'कृषिसेवा AI',
   nameMarathi: 'कृषिसेवा AI',
   tagline: {
-    en: 'Expert AI Advisor for Indian Agriculture & Government Schemes',
-    hi: 'भारतीय कृषि एवं सरकारी योजनाओं के लिए विशेषज्ञ AI सलाहकार',
-    mr: 'भारतीय शेती व सरकारी योजनांसाठी तज्ज्ञ AI सल्लागार',
+    en: 'Expert Agricultural & Website AI Assistant (Text + Voice Enabled)',
+    hi: 'विशेषज्ञ कृषि व वेबसाइट AI सहायक (पाठ एवं आवाज दोनों समर्थित)',
+    mr: 'तज्ज्ञ शेती व वेबसाईट AI सल्लागार (मजकूर व आवाज दोन्ही समर्थित)',
   },
   welcome: {
-    en: `**Namaste! I am your KrishiSeva AI Agricultural Assistant! 🌾**\n\nI can expertly help you with:\n• 🏛️ **Government Schemes** — PM-KISAN, PMFBY, Solar Pump, Drip Subsidy\n• 🌱 **Soil Health** — NPK diagnosis, pH correction, organic carbon\n• 🐛 **Pest Control** — Integrated Pest Management, spray schedule\n• 💧 **Irrigation** — Water scheduling, drip systems, moisture management\n• 🌾 **Crop Management** — Cotton, Wheat, Soybean, Paddy cultivation\n• 💊 **Fertilizer Advice** — Dosage recommendations per acre\n\nType your question below, use 🎤 voice input, or 📷 upload a crop photo for visual diagnosis!`,
-    hi: `**नमस्ते! मैं आपका कृषिसेवा AI सहायक हूँ! 🌾**\n\nमैं इन विषयों पर सहायता कर सकता हूँ:\n• 🏛️ **सरकारी योजनाएं** — PM-KISAN, PMFBY, सोलर पंप, ड्रिप सब्सिडी\n• 🌱 **मिट्टी स्वास्थ्य** — NPK निदान, pH सुधार\n• 🐛 **कीट नियंत्रण** — IPM रणनीति, छिड़काव कार्यक्रम\n• 💧 **सिंचाई** — पानी की मात्रा, ड्रिप सिस्टम\n• 🌾 **फसल प्रबंधन** — कपास, गेहूं, सोयाबीन\n\nनीचे प्रश्न टाइप करें, 🎤 बोलकर पूछें, या 📷 फसल फोटो अपलोड करें!`,
-    mr: `**नमस्कार! मी तुमचा कृषिसेवा AI शेती सहाय्यक आहे! 🌾**\n\nमी या विषयांवर मदत करू शकतो:\n• 🏛️ **शासकीय योजना** — PM-KISAN, PMFBY, सौर पंप, ठिबक अनुदान\n• 🌱 **मृदा आरोग्य** — NPK निदान, pH सुधारणा\n• 🐛 **कीड नियंत्रण** — IPM धोरण, फवारणी वेळापत्रक\n• 💧 **सिंचन** — पाण्याचे वेळापत्रक, ठिबक प्रणाली\n• 🌾 **पीक व्यवस्थापन** — कापूस, गहू, सोयाबीन\n\nखाली प्रश्न टाइप करा, 🎤 बोलून विचारा, किंवा 📷 पीकाचा फोटो अपलोड करा!`,
+    en: `**Namaste! I am your KrishiSeva AI Assistant! 🌾**\n\nI provide **BOTH Text & Voice Answers** for all your queries!\n\nI can help you with:\n• 🌾 **Crops & Cultivation** — Cotton, Wheat, Soybean, Paddy management & dosage\n• 🏛️ **Government Welfare Schemes** — PM-KISAN, PMFBY, Solar Pump, Drip Subsidy, KCC\n• 🌱 **Soil Health & Diagnostics** — NPK levels, pH correction, organic carbon\n• 🐛 **Pest & Disease Control** — Spray schedule, IPM techniques\n• 🌐 **KrishiMitra Website Help** — Soil test tool, scheme finder, contact support (krushimitra.work@gmail.com, 7875648995)\n\n*(Note: I am dedicated strictly to agriculture and KrishiMitra. Non-agricultural questions will be respectfully declined.)*`,
+    hi: `**नमस्ते! मैं आपका कृषिसेवा AI सहायक हूँ! 🌾**\n\nमैं आपके सभी प्रश्नों का **पाठ (Text) एवं आवाज (Voice) दोनों** में उत्तर देता हूँ!\n\nमैं इन विषयों में सहायता कर सकता हूँ:\n• 🌾 **फसल प्रबंधन** — कपास, गेहूं, सोयाबीन, धान उर्वरक खुराक\n• 🏛️ **सरकारी योजनाएं** — PM-KISAN, PMFBY, सोलर पंप, ड्रिप सब्सिडी, KCC\n• 🌱 **मिट्टी स्वास्थ्य** — NPK निदान, pH सुधार, जैविक कार्बन\n• 🐛 **कीट नियंत्रण** — IPM रणनीति व स्प्रे शेड्यूल\n• 🌐 **वेबसाइट सहायता** — मिट्टी जांच टूल, योजनाएं, संपर्क सहायता (krushimitra.work@gmail.com, 7875648995)\n\n*(नोट: मैं केवल कृषि व कृषि योजनाओं से जुड़े प्रश्नों का उत्तर देता हूँ।)*`,
+    mr: `**नमस्कार! मी तुमचा कृषिसेवा AI शेती सहाय्यक आहे! 🌾**\n\nमी तुमच्या सर्व प्रश्नांची **मजकूर (Text) आणि आवाज (Voice) दोन्ही** स्वरूपात उत्तरे देतो!\n\nमी या विषयांवर मदत करू शकतो:\n• 🌾 **पीक व्यवस्थापन** — कापूस, गहू, सोयाबीन, भात खत नियोजन\n• 🏛️ **शासकीय योजना** — PM-KISAN, PMFBY, सौर पंप, ठिबक अनुदान, KCC\n• 🌱 **मृदा आरोग्य** — NPK निदान, pH सुधारणा\n• 🐛 **कीड नियंत्रण** — IPM फवारणी वेळापत्रक\n• 🌐 **वेबसाईट मदत** — माती तपासणी, योजना, संपर्क (krushimitra.work@gmail.com, 7875648995)\n\n*(टीप: मी केवळ शेती व शासकीय योजनांशी संबंधित प्रश्नांची उत्तरे देतो.)*`,
   },
 };
 

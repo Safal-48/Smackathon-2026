@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { Link as RouterLink } from 'react-router-dom';
-import { Sprout, Shield, Bot, LayoutDashboard, Globe, LogOut, User as UserIcon, Menu, X, Sun, Moon, MapPin } from 'lucide-react';
+import { Sprout, Shield, Bot, LayoutDashboard, Globe, LogOut, User as UserIcon, Menu, X, Sun, Moon, MapPin, Headphones } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useLanguage } from '../../context/LanguageContext';
 import { useTheme } from '../../context/ThemeContext';
@@ -20,6 +20,7 @@ export const Navbar = () => {
     { name: t('navSoil'), path: '/soil-analysis', icon: Sprout },
     { name: t('navSchemes'), path: '/schemes', icon: Shield },
     { name: t('navChat'), path: '/ai-chat', icon: Bot },
+    { name: t('navContact'), path: '#contact', isHash: true, icon: Headphones },
   ];
 
   if (user?.role === 'admin') {
@@ -47,6 +48,25 @@ export const Navbar = () => {
             {navLinks.map((link) => {
               const Icon = link.icon;
               const isActive = location.pathname === link.path;
+              if (link.isHash) {
+                return (
+                  <a
+                    key={link.path}
+                    href={link.path}
+                    onClick={(e) => {
+                      const elem = document.querySelector(link.path);
+                      if (elem) {
+                        e.preventDefault();
+                        elem.scrollIntoView({ behavior: 'smooth' });
+                      }
+                    }}
+                    className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium text-slate-300 hover:text-emerald-400 hover:bg-slate-800/50 transition-all"
+                  >
+                    <Icon className="w-4 h-4" />
+                    {link.name}
+                  </a>
+                );
+              }
               return (
                 <RouterLink
                   key={link.path}
@@ -176,6 +196,26 @@ export const Navbar = () => {
         <div className="md:hidden glass-panel border-b border-slate-800 px-4 pt-2 pb-4 space-y-2">
           {navLinks.map((link) => {
             const Icon = link.icon;
+            if (link.isHash) {
+              return (
+                <a
+                  key={link.path}
+                  href={link.path}
+                  onClick={(e) => {
+                    setMobileMenuOpen(false);
+                    const elem = document.querySelector(link.path);
+                    if (elem) {
+                      e.preventDefault();
+                      elem.scrollIntoView({ behavior: 'smooth' });
+                    }
+                  }}
+                  className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-slate-200 hover:bg-slate-800"
+                >
+                  <Icon className="w-5 h-5 text-emerald-400" />
+                  {link.name}
+                </a>
+              );
+            }
             return (
               <RouterLink
                 key={link.path}
