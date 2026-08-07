@@ -31,9 +31,13 @@ export const Login = () => {
 
     setLoading(true);
     try {
-      await login(phone.trim(), password);
+      const data = await login(phone.trim(), password);
       toast('Welcome back! Logging you into your dashboard.', 'success');
-      navigate('/');
+      if (data?.user?.role === 'admin' || phone.trim() === '9999999999') {
+        navigate('/admin');
+      } else {
+        navigate('/');
+      }
     } catch (err) {
       const msg = err.response?.data?.message || 'Login failed. Please check your credentials.';
       setError(msg);
@@ -41,6 +45,11 @@ export const Login = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleQuickLogin = (p, pass) => {
+    setPhone(p);
+    setPassword(pass);
   };
 
   return (
@@ -59,7 +68,7 @@ export const Login = () => {
               <Sprout className="w-9 h-9 text-slate-950 stroke-[2.5]" aria-hidden="true" />
             </div>
             <h1 className="text-2xl font-black text-slate-100">{t('login')}</h1>
-            <p className="text-xs text-slate-400">Access your KrishiSeva AI Farming Dashboard</p>
+            <p className="text-xs text-slate-400">Access your KrishiSeva AI Farming Dashboard or Admin Console</p>
           </div>
 
           {/* Error Banner */}
@@ -144,10 +153,26 @@ export const Login = () => {
           </form>
 
           {/* Quick Demo Credentials */}
-          <div className="p-3 rounded-xl bg-slate-900/80 border border-slate-800 text-center space-y-1">
-            <p className="text-[11px] font-semibold text-emerald-400">⚡ Demo Credentials:</p>
-            <p className="text-[11px] text-slate-300">Phone/Email: <code className="text-amber-300 font-mono">9876543210</code> or <code className="text-amber-300 font-mono">farmer@krishiseva.com</code></p>
-            <p className="text-[11px] text-slate-300">Password: <code className="text-amber-300 font-mono">farmer123</code></p>
+          <div className="p-3.5 rounded-2xl bg-slate-900/90 border border-slate-800 space-y-2">
+            <p className="text-[11px] font-bold text-emerald-400 uppercase tracking-wider text-center">⚡ Quick Demo Login Credentials:</p>
+            <div className="grid grid-cols-2 gap-2">
+              <button
+                type="button"
+                onClick={() => handleQuickLogin('9876543210', 'farmer123')}
+                className="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-left border border-slate-700 transition-all"
+              >
+                <span className="text-xs font-bold text-slate-100 block">🌾 Farmer Login</span>
+                <span className="text-[10px] text-slate-400 font-mono block">9876543210</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => handleQuickLogin('9999999999', 'admin123')}
+                className="p-2 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 text-left border border-amber-500/30 transition-all"
+              >
+                <span className="text-xs font-bold text-amber-300 block">👑 Admin Console</span>
+                <span className="text-[10px] text-amber-400 font-mono block">9999999999</span>
+              </button>
+            </div>
           </div>
 
           <div className="text-center pt-2 border-t border-slate-800 text-xs text-slate-400">
