@@ -291,8 +291,21 @@ export const ChatBot = () => {
     });
   }, [lang]);
 
+  // ─── Stop Ongoing Text-to-Speech Immediately ──────────────────────────────
+  const stopSpeaking = useCallback(() => {
+    if ('speechSynthesis' in window) {
+      try {
+        window.speechSynthesis.cancel();
+      } catch (e) {}
+    }
+    setIsSpeaking(false);
+  }, []);
+
   // ─── Voice Speech-to-Text with Direct Auto Send ─────────────────────────────
   const toggleListening = () => {
+    // Immediately stop ongoing AI speech output so mic doesn't hear old answer
+    stopSpeaking();
+
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (!SpeechRecognition) {
       alert('Voice input is not supported in your browser. Please use Chrome or Edge.');
@@ -362,16 +375,17 @@ export const ChatBot = () => {
   };
 
   // ─── Text-to-Speech ────────────────────────────────────────────────────────
-  const speakText = (text) => {
+  const speakText = (text, forceSpeak = false) => {
     if (!('speechSynthesis' in window)) return;
 
-    if (isSpeaking) {
-      window.speechSynthesis.cancel();
-      setIsSpeaking(false);
+    // If user clicked the same Listen button to stop reading
+    if (isSpeaking && !forceSpeak) {
+      stopSpeaking();
       return;
     }
 
-    window.speechSynthesis.cancel();
+    // Always cut off ongoing speech immediately before starting new answer
+    stopSpeaking();
 
     // Clean text for natural voice speech readout
     const cleanText = text
@@ -401,7 +415,14 @@ export const ChatBot = () => {
     utterance.onend = () => setIsSpeaking(false);
     utterance.onerror = () => setIsSpeaking(false);
 
-    window.speechSynthesis.speak(utterance);
+    // Short 50ms delay so browser engine completes cancellation before starting new utterance
+    setTimeout(() => {
+      try {
+        window.speechSynthesis.speak(utterance);
+      } catch (e) {
+        setIsSpeaking(false);
+      }
+    }, 50);
   };
 
   // ─── Image Upload Handler ──────────────────────────────────────────────────
@@ -430,6 +451,9 @@ export const ChatBot = () => {
     e?.preventDefault();
     const userMsg = quickQuery || input.trim();
     if (!userMsg || loading) return;
+
+    // Immediately stop previous question's AI voice speech!
+    stopSpeaking();
 
     setInput('');
     setShowSuggestions(false);
@@ -463,9 +487,9 @@ export const ChatBot = () => {
         };
         setMessages((prev) => [...prev, aiMsgObj]);
 
-        // Auto-speak response if Voice Assistant mode is ON
+        // Auto-speak response if Voice Assistant mode is ON (forced new answer)
         if (autoVoiceMode) {
-          speakText(res.data.answer);
+          speakText(res.data.answer, true);
         }
 
         // Update conversation history
@@ -488,7 +512,7 @@ export const ChatBot = () => {
           time: getTimestamp(),
         },
       ]);
-      if (autoVoiceMode) speakText(fallbackText);
+      if (autoVoiceMode) speakText(fallbackText, true);
     } finally {
       setLoading(false);
     }
@@ -510,6 +534,7 @@ export const ChatBot = () => {
 
   // ─── Clear Chat ────────────────────────────────────────────────────────────
   const clearChat = () => {
+    stopSpeaking();
     setMessages([
       {
         id: Date.now(),
