@@ -66,7 +66,8 @@ const yieldProjectionData = [
 
 export const Home = () => {
   const { user } = useAuth();
-  const { t, lang } = useLanguage();
+  const { lang, setLang, t } = useLanguage();
+  const { locationProfile, openLocationModal } = useLocationProfile();
 
   // State Management
   const [activeTab, setActiveTab] = useState('overview'); // overview | analytics | calendar
@@ -235,10 +236,20 @@ export const Home = () => {
                   {t('verifiedFarmer')}
                 </span>
               </div>
-              <FadeUp className="text-xs text-slate-400 mt-0.5 flex items-center gap-2">
-                <span>📍 {user?.district || 'Nagpur'}, {user?.state || 'Maharashtra'}</span>
+              <FadeUp className="text-xs text-slate-400 mt-1 flex flex-wrap items-center gap-2">
+                <button
+                  type="button"
+                  onClick={openLocationModal}
+                  className="font-semibold text-emerald-400 hover:underline flex items-center gap-1.5 cursor-pointer bg-slate-900/90 border border-emerald-500/30 px-2.5 py-1 rounded-xl hover:border-emerald-400 transition-all"
+                  title="Click to view or edit Farmer Location Profile"
+                >
+                  <span>📍 {locationProfile.village}, {locationProfile.taluka}, {locationProfile.district}, {locationProfile.state}</span>
+                  <span className="text-[9px] bg-emerald-500/20 text-emerald-300 font-bold px-1.5 py-0.5 rounded-md">
+                    {locationProfile.isGps ? 'GPS Active' : 'Manual'}
+                  </span>
+                </button>
                 <span>•</span>
-                <span>🌾 Farm Size: {user?.farmSizeAcres || 2.5} Acres</span>
+                <span className="text-slate-300 font-medium">🌾 Farm Size: {user?.farmSizeAcres || 2.5} Acres</span>
               </FadeUp>
             </div>
           </div>

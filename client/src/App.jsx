@@ -99,6 +99,9 @@ const AnimatedRoutes = () => {
   );
 };
 
+import { LocationProvider } from './context/LocationContext';
+import { FarmerLocationModal } from './components/farmer/FarmerLocationModal';
+
 // ─── Root App ─────────────────────────────────────────────────────────────────
 export default function App() {
   const [loadingComplete, setLoadingComplete] = useState(false);
@@ -109,27 +112,30 @@ export default function App() {
         <ThemeProvider>
           <LanguageProvider>
             <ToastProvider>
-              <AnimatePresence mode="wait">
-                {!loadingComplete && (
-                  <LoadingScreen key="loader" onComplete={() => setLoadingComplete(true)} />
-                )}
-              </AnimatePresence>
+              <LocationProvider>
+                <AnimatePresence mode="wait">
+                  {!loadingComplete && (
+                    <LoadingScreen key="loader" onComplete={() => setLoadingComplete(true)} />
+                  )}
+                </AnimatePresence>
 
-              {loadingComplete && (
-                <Router>
-                  <div className="flex flex-col min-h-screen selection:bg-emerald-500 selection:text-slate-950 relative overflow-x-hidden">
-                    <CustomCursor />
-                    <ScrollProgress totalSections={3} />
-                    <Navbar />
-                    <main id="main-content" className="flex-1 z-10" role="main">
-                      <ErrorBoundary>
-                        <AnimatedRoutes />
-                      </ErrorBoundary>
-                    </main>
-                    <Footer />
-                  </div>
-                </Router>
-              )}
+                {loadingComplete && (
+                  <Router>
+                    <div className="flex flex-col min-h-screen selection:bg-emerald-500 selection:text-slate-950 relative overflow-x-hidden">
+                      <CustomCursor />
+                      <ScrollProgress totalSections={3} />
+                      <Navbar />
+                      <FarmerLocationModal />
+                      <main id="main-content" className="flex-1 z-10" role="main">
+                        <ErrorBoundary>
+                          <AnimatedRoutes />
+                        </ErrorBoundary>
+                      </main>
+                      <Footer />
+                    </div>
+                  </Router>
+                )}
+              </LocationProvider>
             </ToastProvider>
           </LanguageProvider>
         </ThemeProvider>

@@ -1,15 +1,17 @@
 import React, { useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { Link as RouterLink } from 'react-router-dom';
-import { Sprout, Shield, Bot, LayoutDashboard, Globe, LogOut, User as UserIcon, Menu, X, Sun, Moon } from 'lucide-react';
+import { Sprout, Shield, Bot, LayoutDashboard, Globe, LogOut, User as UserIcon, Menu, X, Sun, Moon, MapPin } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useLanguage } from '../../context/LanguageContext';
 import { useTheme } from '../../context/ThemeContext';
+import { useLocationProfile } from '../../context/LocationContext';
 
 export const Navbar = () => {
   const { user, logout } = useAuth();
   const { lang, setLang, t } = useLanguage();
   const { theme, toggleTheme } = useTheme();
+  const { locationProfile, openLocationModal } = useLocationProfile();
   const location = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -62,8 +64,20 @@ export const Navbar = () => {
             })}
           </div>
 
-          {/* Right Actions: Language Switcher, Theme Toggle & Auth */}
+          {/* Right Actions: Location Badge, Language Switcher, Theme Toggle & Auth */}
           <div className="hidden md:flex items-center gap-3">
+            {/* Location Profile Quick Badge */}
+            <button
+              onClick={openLocationModal}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-900 border border-emerald-500/30 text-emerald-300 hover:border-emerald-400 text-xs font-semibold transition-all shadow-sm group"
+              title="Click to view or edit your Farmer Location Profile (GPS / Manual)"
+            >
+              <MapPin className="w-3.5 h-3.5 text-emerald-400 group-hover:scale-110 transition-transform" />
+              <span className="max-w-[120px] truncate">
+                {locationProfile?.district || 'Nagpur'}, {locationProfile?.state || 'MH'}
+              </span>
+            </button>
+
             {/* Dark/Light Mode Toggle Button */}
             <button
               onClick={toggleTheme}
