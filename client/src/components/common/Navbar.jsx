@@ -28,23 +28,23 @@ export const Navbar = () => {
   }
 
   return (
-    <nav className="sticky top-0 z-50 glass-panel border-b border-slate-800/80">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
+    <nav className="sticky top-2 z-50 max-w-[96%] xl:max-w-7xl mx-auto mb-4">
+      <div className="glass-panel rounded-2xl border border-slate-800/80 shadow-xl shadow-slate-950/40 px-4 sm:px-6 backdrop-blur-xl bg-slate-950/80">
+        <div className="flex items-center justify-between h-16 gap-2">
           
           {/* Logo */}
-          <RouterLink to="/" className="flex items-center gap-3 group">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-500 to-green-400 flex items-center justify-center shadow-lg shadow-emerald-950/40 group-hover:scale-105 transition-transform">
-              <Sprout className="w-6 h-6 text-slate-950 stroke-[2.5]" />
+          <RouterLink to="/" className="flex items-center gap-2.5 shrink-0 group">
+            <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-emerald-500 to-green-400 flex items-center justify-center shadow-lg shadow-emerald-950/40 group-hover:scale-105 transition-transform">
+              <Sprout className="w-5 h-5 text-slate-950 stroke-[2.5]" />
             </div>
             <div>
-              <span className="text-xl font-bold text-gradient-green tracking-tight">KrishiSeva AI</span>
-              <span className="hidden sm:block text-[10px] text-slate-400 font-medium tracking-wider uppercase">Smart Farming & Schemes</span>
+              <span className="text-lg font-black text-gradient-green tracking-tight whitespace-nowrap block">KrishiSeva AI</span>
+              <span className="hidden xl:block text-[9px] text-slate-400 font-medium tracking-wider uppercase whitespace-nowrap">Smart Farming & Schemes</span>
             </div>
           </RouterLink>
 
           {/* Desktop Navigation Links */}
-          <div className="hidden md:flex items-center gap-1">
+          <div className="hidden lg:flex items-center gap-1 overflow-x-auto no-scrollbar">
             {navLinks.map((link) => {
               const Icon = link.icon;
               const isActive = location.pathname === link.path;
@@ -60,10 +60,10 @@ export const Navbar = () => {
                         elem.scrollIntoView({ behavior: 'smooth' });
                       }
                     }}
-                    className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium text-slate-300 hover:text-emerald-400 hover:bg-slate-800/50 transition-all"
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold text-slate-300 hover:text-emerald-400 hover:bg-slate-800/60 transition-all whitespace-nowrap"
                   >
-                    <Icon className="w-4 h-4" />
-                    {link.name}
+                    <Icon className="w-3.5 h-3.5 shrink-0 text-emerald-400" />
+                    <span>{link.name}</span>
                   </a>
                 );
               }
@@ -71,29 +71,29 @@ export const Navbar = () => {
                 <RouterLink
                   key={link.path}
                   to={link.path}
-                  className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all whitespace-nowrap ${
                     isActive
-                      ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 shadow-sm shadow-emerald-500/10'
-                      : 'text-slate-300 hover:text-white hover:bg-slate-800/50'
+                      ? 'bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 shadow-sm shadow-emerald-500/10'
+                      : 'text-slate-300 hover:text-white hover:bg-slate-800/60'
                   }`}
                 >
-                  <Icon className="w-4 h-4" />
-                  {link.name}
+                  <Icon className="w-3.5 h-3.5 shrink-0" />
+                  <span>{link.name}</span>
                 </RouterLink>
               );
             })}
           </div>
 
           {/* Right Actions: Location Badge, Language Switcher, Theme Toggle & Auth */}
-          <div className="hidden md:flex items-center gap-3">
+          <div className="hidden lg:flex items-center gap-2.5">
             {/* Location Profile Quick Badge */}
             <button
               onClick={openLocationModal}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-900 border border-emerald-500/30 text-emerald-300 hover:border-emerald-400 text-xs font-semibold transition-all shadow-sm group"
+              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-slate-900 border border-emerald-500/30 text-emerald-300 hover:border-emerald-400 text-xs font-semibold transition-all shadow-sm group whitespace-nowrap"
               title="Click to view or edit your Farmer Location Profile (GPS / Manual)"
             >
-              <MapPin className="w-3.5 h-3.5 text-emerald-400 group-hover:scale-110 transition-transform" />
-              <span className="max-w-[120px] truncate">
+              <MapPin className="w-3.5 h-3.5 text-emerald-400 group-hover:scale-110 transition-transform shrink-0" />
+              <span className="max-w-[110px] truncate">
                 {locationProfile?.district || 'Nagpur'}, {locationProfile?.state || 'MH'}
               </span>
             </button>
@@ -101,60 +101,60 @@ export const Navbar = () => {
             {/* Dark/Light Mode Toggle Button */}
             <button
               onClick={toggleTheme}
-              className="p-2 rounded-xl glass-panel hover:bg-emerald-500/10 border border-emerald-500/20 text-slate-300 hover:text-emerald-400 transition-all flex items-center gap-1.5 text-xs font-semibold"
+              className="p-1.5 px-2 rounded-xl glass-panel hover:bg-emerald-500/10 border border-emerald-500/20 text-slate-300 hover:text-emerald-400 transition-all flex items-center gap-1.5 text-xs font-semibold whitespace-nowrap"
               title={`Switch to ${theme === 'dark' ? 'Light' : 'Dark'} Mode`}
             >
               {theme === 'dark' ? (
                 <>
                   <Sun className="w-4 h-4 text-amber-400 animate-spin" style={{ animationDuration: '16s' }} />
-                  <span className="text-[11px] font-bold text-amber-300">Light Mode</span>
+                  <span className="text-[11px] font-bold text-amber-300">Light</span>
                 </>
               ) : (
                 <>
                   <Moon className="w-4 h-4 text-emerald-600" />
-                  <span className="text-[11px] font-bold text-emerald-800">Dark Mode</span>
+                  <span className="text-[11px] font-bold text-emerald-800">Dark</span>
                 </>
               )}
             </button>
 
             {/* Multilingual Dropdown Selector */}
-            <div className="flex items-center gap-1 bg-slate-800/80 border border-slate-700/60 rounded-lg px-2 py-1 text-xs text-slate-300">
-              <Globe className="w-3.5 h-3.5 text-emerald-400" />
+            <div className="flex items-center gap-1 bg-slate-800/80 border border-slate-700/60 rounded-xl px-2 py-1 text-xs text-slate-300 whitespace-nowrap">
+              <Globe className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
               <select
                 value={lang}
                 onChange={(e) => setLang(e.target.value)}
                 className="bg-transparent text-slate-200 outline-none cursor-pointer font-medium"
               >
                 <option value="en" className="bg-slate-900 text-slate-200">English</option>
-                <option value="hi" className="bg-slate-900 text-slate-200">हिंदी (Hindi)</option>
-                <option value="mr" className="bg-slate-900 text-slate-200">मराठी (Marathi)</option>
+                <option value="hi" className="bg-slate-900 text-slate-200">हिंदी</option>
+                <option value="mr" className="bg-slate-900 text-slate-200">मराठी</option>
               </select>
             </div>
 
             {user ? (
-              <div className="flex items-center gap-3 pl-2 border-l border-slate-800">
-                <span className="text-xs font-semibold text-emerald-400 bg-emerald-500/10 px-2.5 py-1 rounded-full border border-emerald-500/20">
+              <div className="flex items-center gap-2 pl-2 border-l border-slate-800 whitespace-nowrap">
+                <span className="text-xs font-semibold text-emerald-400 bg-emerald-500/10 px-2.5 py-1 rounded-full border border-emerald-500/20 max-w-[150px] truncate">
                   {user.fullName} ({user.role})
                 </span>
                 <button
                   onClick={logout}
-                  className="p-2 text-slate-400 hover:text-rose-400 hover:bg-slate-800 rounded-lg transition-colors"
+                  className="p-1.5 text-slate-400 hover:text-rose-400 hover:bg-slate-800 rounded-lg transition-colors"
                   title={t('logout')}
                 >
                   <LogOut className="w-4 h-4" />
                 </button>
               </div>
             ) : (
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1.5 whitespace-nowrap">
                 <RouterLink
                   to="/login"
-                  className="px-3.5 py-1.5 rounded-lg text-xs font-semibold text-slate-300 hover:text-white hover:bg-slate-800 transition-all"
+                  className="px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-300 hover:text-white hover:bg-slate-800 transition-all"
                 >
                   {t('login')}
                 </RouterLink>
                 <RouterLink
                   to="/register"
-                  className="px-4 py-1.5 rounded-lg text-xs font-semibold bg-emerald-500 hover:bg-emerald-400 text-slate-950 shadow-md shadow-emerald-950/50 transition-all"
+                  className="px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-emerald-500 hover:bg-emerald-400 text-slate-950 shadow-md shadow-emerald-950/50 transition-all"
                 >
                   {t('register')}
                 </RouterLink>
@@ -163,7 +163,7 @@ export const Navbar = () => {
           </div>
 
           {/* Mobile Menu Button & Mobile Theme Toggle */}
-          <div className="flex md:hidden items-center gap-2">
+          <div className="flex lg:hidden items-center gap-2">
             <button
               onClick={toggleTheme}
               className="p-1.5 rounded-lg bg-slate-800 border border-slate-700 text-slate-300"
