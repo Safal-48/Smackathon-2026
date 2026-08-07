@@ -47,9 +47,27 @@ export const Login = () => {
     }
   };
 
-  const handleQuickLogin = (p, pass) => {
+  const handleQuickLogin = async (p, pass) => {
     setPhone(p);
     setPassword(pass);
+    setError('');
+    setLoading(true);
+
+    try {
+      const data = await login(p, pass);
+      toast('Welcome back! Logging you into your dashboard.', 'success');
+      if (data?.user?.role === 'admin' || p === '9999999999') {
+        navigate('/admin');
+      } else {
+        navigate('/');
+      }
+    } catch (err) {
+      const msg = err.response?.data?.message || 'Login failed. Please check your credentials.';
+      setError(msg);
+      toast(msg, 'error');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
