@@ -133,9 +133,18 @@ export const Navbar = () => {
 
             {user ? (
               <div className="flex items-center gap-2 pl-2 border-l border-slate-800 whitespace-nowrap shrink-0">
-                <span className="text-xs font-semibold text-emerald-400 bg-emerald-500/10 px-2.5 py-1 rounded-full border border-emerald-500/20 max-w-[130px] truncate">
-                  {user.fullName}
-                </span>
+                {user.role === 'admin' ? (
+                  <RouterLink
+                    to="/admin"
+                    className="flex items-center gap-1 text-xs font-bold text-amber-300 bg-amber-500/20 px-2.5 py-1 rounded-full border border-amber-500/40 hover:bg-amber-500/30 transition-all"
+                  >
+                    👑 Admin Console
+                  </RouterLink>
+                ) : (
+                  <span className="text-xs font-semibold text-emerald-400 bg-emerald-500/10 px-2.5 py-1 rounded-full border border-emerald-500/20 max-w-[130px] truncate">
+                    🌾 {user.fullName}
+                  </span>
+                )}
                 <button
                   onClick={logout}
                   className="p-1.5 text-slate-400 hover:text-rose-400 hover:bg-slate-800 rounded-lg transition-colors"
@@ -157,6 +166,13 @@ export const Navbar = () => {
                   className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-emerald-500 hover:bg-emerald-400 text-slate-950 shadow-md shadow-emerald-950/50 transition-all"
                 >
                   {t('register')}
+                </RouterLink>
+                <RouterLink
+                  to="/login"
+                  className="px-2.5 py-1.5 rounded-lg text-xs font-bold text-amber-300 bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 transition-all"
+                  title="Admin Console Login"
+                >
+                  👑 Admin
                 </RouterLink>
               </div>
             )}
